@@ -12,12 +12,12 @@ before_script:
       echo "info: export staging env file environment"
       export $(grep -v "^#" $STAGING__ENV_FILE | xargs)
       echo "info: copy staging routing table to pyalbert config"
-      cp ./llm_routing_table.staging.json ./llm_routing_table.json
+      cp ${STAGING__LLM_ROUTING_TABLE} ./llm_routing_table.json
     elif [[ $CI_COMMIT_BRANCH = "main" ]]; then
       echo "info: export production env file environment"
       export $(grep -v "^#" $PROD__ENV_FILE | xargs)
       echo "info: copy production routing table to pyalbert config"
-      cp ./llm_routing_table.prod.json ./llm_routing_table.json
+      cp ${PROD__LLM_ROUTING_TABLE} ./llm_routing_table.json
     fi
 
 ############################################
