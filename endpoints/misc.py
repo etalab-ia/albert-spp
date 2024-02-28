@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 from fastapi.responses import JSONResponse
 
-from app.config import APP_VERSION
+from config import APP_VERSION
 
 router = APIRouter()
 

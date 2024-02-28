@@ -1,13 +1,9 @@
 #
 # Projet
 #
-_data/
-api/tiny_albert.bin
 
-# api
-api/app/*.bin
-api/app/*.db
-api/app/tests/test_data/mailjet
+#...
+
 
 #
 # Default
