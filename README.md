@@ -4,7 +4,22 @@
 
 ## Déploiement
 
-### Build
+### Local
+
+* Assurez vous de déployer une base de données Redis préalablement.
+
+* Lancez l'API en remplacant dans la commande suivante les informations de connexion à la base de données Redis.
+
+    ```bash
+    REDIS_HOST=<host> \
+    REDIS_PORT=<port> \
+    REDIS_PASSWORD=<password> \
+    uvicorn api.app:app --proxy-headers --root-path / --forwarded-allow-ips '*' --host 0.0.0.0 --port 8000 --reload
+    ```
+
+### Docker
+
+#### Build
 
 ```bash
 export CI_REGISTRY_IMAGE=myregistry
@@ -18,7 +33,7 @@ docker build --rm --tag ${CI_REGISTRY_IMAGE}/api:${CI_API_IMAGE_TAG} --file ./Do
 bash deploy.sh -r llm_routing_table.example.json -f .env.example
 ```
 
-## CI/CD
+### CI/CD (docker)
 
 Variables d'environnement nécessaires :
 
@@ -34,9 +49,7 @@ Variables d'environnement nécessaires :
 
 Les fichiers `STAGING__ENV_FILE` et `PROD__ENV_FILE` doivent contenir les variables d'environnements suivantes :
 
-* REDIS_PASSWORD 
+* CI_DEPLOY_HOST
+* REDIS_PASSWORD
 
 Les fichiers `STAGING__LLM_ROUTING_TABLE` et `PROD__LLM_ROUTING_TABLE` doivent être sur le modèle du fichier [llm_routing_table.example.json](./llm_routing_table.example.json). **Ce fichier json doit pour chaque clef indiqué un modèle de LLM déployé. Le fichier de déploiement [deploy.sh](./deploy.sh) va déployé une API pour chaque valeur de l'attribut *api_port* unique mentionné.**
-
-
-

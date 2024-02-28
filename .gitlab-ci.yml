@@ -62,6 +62,7 @@ deploy:
     - | # send deployment files to remote server
       mkdir -p ./${CI_JOB_ID}
       cp ./deploy.sh ./${CI_JOB_ID}/deploy.sh
+      cp ./docker-compose.yml ./${CI_JOB_ID}/docker-compose.yml
       cp ./llm_routing_table.json ./${CI_JOB_ID}/llm_routing_table.json
       echo "
       CI_REGISTRY_IMAGE=${CI_REGISTRY_IMAGE}
