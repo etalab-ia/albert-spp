@@ -1,0 +1,30 @@
+
+from fastapi import APIRouter, FastAPI
+from starlette.middleware.cors import CORSMiddleware
+
+from config import APP_DESCRIPTION, APP_NAME, APP_VERSION, BACKEND_CORS_ORIGINS, CONTACT
+from endpoints import api, misc
+
+
+# init redis
+
+app = FastAPI(
+    title=APP_NAME,
+    description=APP_DESCRIPTION,
+    version=APP_VERSION,
+    contact=CONTACT
+)
+
+if BACKEND_CORS_ORIGINS:
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=[str(origin) for origin in BACKEND_CORS_ORIGINS],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+
+api_router = APIRouter()
+api_router.include_router(misc.router)
+api_router.include_router(api.router)
+app.include_router(api_router)
