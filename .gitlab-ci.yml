@@ -1,0 +1,81 @@
+stages:
+  - build
+  - deploy
+
+############################################
+################# CONFIG ###################
+############################################
+
+before_script:
+  - | # export env file and copy routing table to pyalbert config
+    if [[ $CI_COMMIT_BRANCH = "staging" ]]; then
+      echo "info: export staging env file environment"
+      export $(grep -v "^#" $STAGING__ENV_FILE | xargs)
+      echo "info: copy staging routing table to pyalbert config"
+      cp ./llm_routing_table.staging.json ./llm_routing_table.json
+    elif [[ $CI_COMMIT_BRANCH = "main" ]]; then
+      echo "info: export production env file environment"
+      export $(grep -v "^#" $PROD__ENV_FILE | xargs)
+      echo "info: copy production routing table to pyalbert config"
+      cp ./llm_routing_table.prod.json ./llm_routing_table.json
+    fi
+
+############################################
+################## BUILD ###################
+############################################
+
+build:
+  rules:
+    - if: $CI_COMMIT_BRANCH == "staging" || $CI_COMMIT_BRANCH == "main"
+      when: manual
+      allow_failure: true  # to avoid blocked state
+  stage: build
+  image: docker:latest
+  services:
+    - docker:dind
+  script:
+    - | # ssh connection setup
+      chmod og= $CI_DEPLOY_USER_SSH_PRIVATE_KEY
+      apk update
+      apk add openssh-client
+    - | # build and push api image to gitlab registry
+      docker login --username gitlab-ci-token --password $CI_JOB_TOKEN $CI_REGISTRY
+      docker build --rm --tag ${CI_REGISTRY_IMAGE}/api:${CI_API_IMAGE_TAG} --file ./Dockerfile .
+      docker push ${CI_REGISTRY_IMAGE}/api:${CI_API_IMAGE_TAG}
+
+############################################
+################## DEPLOY ##################
+############################################
+
+deploy:
+  rules:
+    - if: $CI_COMMIT_BRANCH == "staging" || $CI_COMMIT_BRANCH == "main"
+      when: manual
+      allow_failure: true  # to avoid blocked state
+  stage: deploy
+  image: alpine:latest
+  script:
+    - | # ssh connection setup
+      chmod og= $CI_DEPLOY_USER_SSH_PRIVATE_KEY
+      apk update
+      apk add openssh-client
+    - | # send deployment files to remote server
+      mkdir -p ./${CI_JOB_ID}
+      cp ./deploy.sh ./${CI_JOB_ID}/deploy.sh
+      cp ./llm_routing_table.json ./${CI_JOB_ID}/llm_routing_table.json
+      echo "
+      CI_REGISTRY_IMAGE=${CI_REGISTRY_IMAGE}
+      CI_API_IMAGE_TAG=${CI_API_IMAGE_TAG}
+      REDIS_PASSWORD=${REDIS_PASSWORD}
+      COMPOSE_FILE=/home/${CI_DEPLOY_USER}/${CI_JOB_ID}/docker-compose.yml
+      COMPOSE_PROJECT_NAME=spp
+      " > ./${CI_JOB_ID}/.env
+      scp -i $CI_DEPLOY_USER_SSH_PRIVATE_KEY -o StrictHostKeyChecking=no -r ./${CI_JOB_ID} ${CI_DEPLOY_USER}@${CI_DEPLOY_HOST}:/home/${CI_DEPLOY_USER}/${CI_JOB_ID}
+    - | # deploy vllm containers to remote server
+      ssh -i $CI_DEPLOY_USER_SSH_PRIVATE_KEY -o StrictHostKeyChecking=no ${CI_DEPLOY_USER}@${CI_DEPLOY_HOST} "
+      docker login --username gitlab-ci-token --password $CI_JOB_TOKEN $CI_REGISTRY
+      docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+      cd /home/${CI_DEPLOY_USER}/${CI_JOB_ID}
+      bash ./deploy.sh -r ./llm_routing_table.json -f .env
+      rm -rf ~/${CI_JOB_ID}
+      "

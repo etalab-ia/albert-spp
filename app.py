@@ -18,9 +18,9 @@ from subscriptions import Listener
 
 # Init Redis
 # --
-r = Redis(host=REDIS_HOST, port=REDIS_PORT, password=REDIS_PASSWORD, db=0)
-listener = Listener(r, ["spp-exp-channel"])
-listener.start()
+# r = Redis(host=REDIS_HOST, port=REDIS_PORT, password=REDIS_PASSWORD, db=0)
+# listener = Listener(r, ["spp-exp-channel"])
+# listener.start()
 
 # Init server
 # --
@@ -29,7 +29,7 @@ app = FastAPI(title=APP_NAME, description=APP_DESCRIPTION, version=APP_VERSION, 
 if BACKEND_CORS_ORIGINS:
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=[str(origin) for origin in BACKEND_CORS_ORIGINS],
+        allow_origins=BACKEND_CORS_ORIGINS,
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
