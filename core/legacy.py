@@ -16,26 +16,26 @@ from config import LLM_TABLE
 from ._acronyms import ACRONYMS
 
 
-# Legacy client is disaled here
+# Legacy client is disabled here
 API_URL = ""
 FIRST_ADMIN_USERNAME = ""
 FIRST_ADMIN_PASSWORD = ""
 API_ROUTE_VER = ""
 
 ################################################################################
-# WARGNING
+# WARNING
 ################################################################################
 
-# This is a mere copy of albert-backend.commons
-# This a temporary waiting for **pyalbert* to be available.
-# Hence this code will be exposed and easaly accesible by :
+# This is a mere copy of albert-backend.commons.
+# This a temporary/volatile code waiting for **pyalbert* to be available.
+# Hence, this code will be exposed and easily accessible by doing:
 #
 # pip install pyalbert
 # ```python
 # from pyalbert import get_legacy_client, get_llm_client, get_prompter, ACRONYMS
 # ```
 #
-# On can imagine that the user will pass Albert-Api-Token to pyalbert to authenticate itself.
+# On can imagine that the user will pass an {Albert-Api-Token} to pyalbert to authenticate itself and consumes the Albert API (backend).
 #
 ################################################################################
 
