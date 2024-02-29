@@ -1,1 +1,1 @@
-from .vllm import generate
+from .llm import generate
