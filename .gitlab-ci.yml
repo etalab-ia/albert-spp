@@ -64,7 +64,7 @@ deploy:
       cp ./deploy.sh ./${CI_JOB_ID}/deploy.sh
       cp ./docker-compose.yml ./${CI_JOB_ID}/docker-compose.yml
       cp ./llm_routing_table.json ./${CI_JOB_ID}/llm_routing_table.json
-      cp $API_KEYS_FILE ./${CI_JOB_ID}/spp_api_keys.json
+      cp $API_KEYS ./${CI_JOB_ID}/spp_api_keys.json
       echo "
       CI_REGISTRY_IMAGE=${CI_REGISTRY_IMAGE}
       CI_API_IMAGE_TAG=${CI_API_IMAGE_TAG}
