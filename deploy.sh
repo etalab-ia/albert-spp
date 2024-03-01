@@ -115,7 +115,10 @@ for (( i=0; i<${#api_table[@]}; i++ ));do
 
     echo "info: deploying api container on ${API_PORT} port with LLM_TABLE: $LLM_TABLE"
     
+    echo "debug: stopping and removing api container"
     docker compose --env-file $env_file down
+    echo "debug: removing api image"
     docker image rm ${CI_REGISTRY_IMAGE}/api:${CI_API_IMAGE_TAG} || true
+    echo "debug: deploying api container"
     docker compose --env-file $env_file  up --detach  
 done
