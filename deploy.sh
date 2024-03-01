@@ -113,8 +113,7 @@ for (( i=0; i<${#api_table[@]}; i++ ));do
     export LLM_TABLE=$model_list
     export API_PORT=$api_port
 
-    echo "info: LLM_TABLE: $LLM_TABLE"
-    echo "info: deploying ${COMPOSE_PROJECT_NAME}-${API_PORT} containers"
+    echo "info: deploying api container on ${API_PORT} port with LLM_TABLE: $LLM_TABLE"
     
     docker compose --env-file $env_file down
     docker image rm ${CI_REGISTRY_IMAGE}/api:${CI_API_IMAGE_TAG} || true
