@@ -14,8 +14,13 @@
     REDIS_HOST=<host> \
     REDIS_PORT=<port> \
     REDIS_PASSWORD=<password> \
+    LLM_TABLE=<llm_table> \
     uvicorn api.app:app --proxy-headers --root-path / --forwarded-allow-ips '*' --host 0.0.0.0 --port 8000 --reload
     ```
+
+    La variable `LLM_TABLE` doit être une string qui prend la forme d'une liste de tuple python comme ceçi : `'[("model_name"), ("model_url")]'`. Il est possible de fournir la liste de plusieurs modèles déployés à l'API.
+
+    > **⚠️ Attention à des fins de développement cette API ne supporte qu'une entrée de modèle et un seul modèle : [AgentPublic/fabrique-reference-2](https://huggingface.co/AgentPublic/fabrique-reference-2)**
 
 ### Docker
 
@@ -37,19 +42,25 @@ bash deploy.sh -r llm_routing_table.example.json -f .env.example
 
 Variables d'environnement nécessaires :
 
-| key | type |
+| key | type | value |
+| --- | --- | --- |
+| CI_DEPLOY_USER | variable | compte utilisateur sur les VM de déploiement |
+| CI_DEPLOY_USER_SSH_PRIVATE_KEY | variable | clef SSH privée du compte utilisateur |
+| CI_API_IMAGE_TAG | variable | version de l'image API qui est build (ex: 1.0.0) |
+| STAGING__ENV_FILE | file | (1) |
+| PROD__ENV_FILE | file | (1) |
+| STAGING__LLM_ROUTING_TABLE | file | (2) |
+| PROD__LLM_ROUTING_TABLE | file | (2) |
+
+**(1)** Les fichiers `STAGING__ENV_FILE` et `PROD__ENV_FILE` doivent contenir les variables d'environnements suivantes :
+
+| key | value |
 | --- | --- |
-| CI_DEPLOY_USER | variable |
-| CI_DEPLOY_USER_SSH_PRIVATE_KEY | variable |
-| CI_API_IMAGE_TAG | variable |
-| STAGING__ENV_FILE | file |
-| PROD__ENV_FILE | file |
-| STAGING__LLM_ROUTING_TABLE | file |
-| PROD__LLM_ROUTING_TABLE | file |
+| ENV | staging ou prod |
+| CI_DEPLOY_HOST | IP ou DNS de la vm de déployement |
+| REDIS_PASSWORD | mot de passe de base de données Redis |
 
-Les fichiers `STAGING__ENV_FILE` et `PROD__ENV_FILE` doivent contenir les variables d'environnements suivantes :
 
-* CI_DEPLOY_HOST
-* REDIS_PASSWORD
+**(2)** Les fichiers `STAGING__LLM_ROUTING_TABLE` et `PROD__LLM_ROUTING_TABLE` doivent être sur le modèle du fichier [llm_routing_table.example.json](./llm_routing_table.example.json). **Ce fichier json doit pour chaque clef indiqué un modèle de LLM déployé. Le fichier de déploiement [deploy.sh](./deploy.sh) va déployé une API pour chaque valeur de l'attribut *api_port* unique mentionné.**
 
-Les fichiers `STAGING__LLM_ROUTING_TABLE` et `PROD__LLM_ROUTING_TABLE` doivent être sur le modèle du fichier [llm_routing_table.example.json](./llm_routing_table.example.json). **Ce fichier json doit pour chaque clef indiqué un modèle de LLM déployé. Le fichier de déploiement [deploy.sh](./deploy.sh) va déployé une API pour chaque valeur de l'attribut *api_port* unique mentionné.**
+> **⚠️ Attention à des fins de développement cette API ne supporte qu'une entrée de modèle et un seul modèle : [AgentPublic/fabrique-reference-2](https://huggingface.co/AgentPublic/fabrique-reference-2)**

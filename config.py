@@ -13,7 +13,12 @@ CONTACT = {
 
 # Env
 ENV = os.environ.get("ENV", "dev")
-assert ENV in ["unittest", "dev", "prod"], "Wrong ENV value"
+assert ENV in [
+    "unittest",
+    "dev",
+    "staging",
+    "prod",
+], "wrong ENV value. Should be 'unittest', 'dev', 'staging' or 'prod'"
 
 # CORS
 BACKEND_CORS_ORIGINS = ["*"]
@@ -24,15 +29,15 @@ REDIS_PORT = os.environ.get("REDIS_PORT", "6379")
 REDIS_PASSWORD = os.environ.get("REDIS_PASSWORD", None)
 
 # LLM
-LLM_DEFAULT_MODEL = "AgentPuclic/fabrique-reference-2"  # The model is not customizable for this API
+# The model is not customizable for this API
+LLM_DEFAULT_MODEL = "AgentPublic/fabrique-reference-2"
+
 LLM_TABLE = os.getenv("LLM_TABLE")
 if LLM_TABLE:
-    try:
-        LLM_TABLE = ast.literal_eval(LLM_TABLE)
-    except Exception as e:
-        raise ValueError("LLM_TABLE is not valid: %s" % e)
-else:  # default
-    LLM_TABLE = [
-        # model_name/api URL
-        ("AgentPuclic/fabrique-reference-2", "http://127.0.0.1:8081")
-    ]
+    LLM_TABLE = ast.literal_eval(LLM_TABLE)
+    models = [model for model, url in LLM_TABLE]
+    assert LLM_DEFAULT_MODEL in models, f"{LLM_DEFAULT_MODEL} should be in LLM_TABLE"
+
+# only for local deployment, to use a local LLM server on port 8081
+elif ENV == "dev":
+    LLM_TABLE = [(LLM_DEFAULT_MODEL, "http://127.0.0.1:8081")]
