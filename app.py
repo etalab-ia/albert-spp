@@ -1,3 +1,5 @@
+import json
+
 from fastapi import APIRouter, FastAPI
 from starlette.middleware.cors import CORSMiddleware
 
@@ -22,7 +24,9 @@ listener = Listener(r, ["spp-exp-channel"])
 listener.start()
 
 # Init server
-app = FastAPI(title=APP_NAME, description=APP_DESCRIPTION, version=APP_VERSION, contact=CONTACT)
+app = FastAPI(
+    title=APP_NAME, description=APP_DESCRIPTION, version=APP_VERSION, contact=CONTACT
+)
 
 if BACKEND_CORS_ORIGINS:
     app.add_middleware(

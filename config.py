@@ -3,13 +3,17 @@ import ast
 
 # App
 APP_NAME = "albert-spp"
-APP_DESCRIPTION = "Albert for Services Publics Plus."
-APP_VERSION = "1.0.0"
+APP_DESCRIPTION = """Albert for Services Publics Plus.
+
+Les requêtes aux différents doivent contenir un header au format `Authorization: Bearer <token>` avec une clé API valide. Pour obtenir une clé API, veuillez contacter l'équipe Etalab.
+"""
+APP_VERSION = os.environ.get("APP_VERSION", "0.0.0")
 CONTACT = {
     "name": "Etalab - Datalab",
     "url": "https://www.etalab.gouv.fr/",
-    "email": "etalab@mail.numerique.gouv.fr",
+    "email": "etalab@modernisation.gouv.fr",
 }
+API_KEYS_FILE = os.environ("API_KEYS_FILE", "api_keys.example.json")
 
 # Env
 ENV = os.environ.get("ENV", "dev")

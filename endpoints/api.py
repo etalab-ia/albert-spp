@@ -1,4 +1,4 @@
-from fastapi import Body, HTTPException
+from fastapi import Body, HTTPException, Security
 from fastapi import APIRouter, Depends
 import schemas
 import uuid
@@ -6,7 +6,7 @@ from redis import Redis
 from deps import get_redis
 from typing import Union, List
 import json
-from subscriptions import encode_experience_key
+from subscriptions import encode_experience_key, get_api_key
 
 router = APIRouter()
 
@@ -15,6 +15,7 @@ router = APIRouter()
 def anonymize(
     form_data: Union[schemas.ExpIdWithText, List[schemas.ExpIdWithText]] = Body(...),
     redis: Redis = Depends(get_redis),
+    api_key: str = Security(get_api_key),
 ):
     if not isinstance(form_data, list):
         form_data = [form_data]
@@ -40,6 +41,7 @@ def anonymize(
 def ditp_get_data(
     form_data: Union[schemas.ExpId, List[schemas.ExpId]] = Body(...),
     redis: Redis = Depends(get_redis),
+    api_key: str = Security(get_api_key),
 ):
     if not isinstance(form_data, list):
         form_data = [form_data]

@@ -1,10 +1,13 @@
 import threading
 import json
+
 from core import generate
+
 
 def encode_experience_key(form):
     key = "experience-" + form["id"]
     return key
+
 
 class Listener(threading.Thread):
     def __init__(self, r, channels):
