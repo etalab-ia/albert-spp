@@ -4,7 +4,6 @@ from core import generate
 
 def encode_experience_key(form):
     key = "experience-" + form["id"]
-    print(key)
     return key
 
 class Listener(threading.Thread):
