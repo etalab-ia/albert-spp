@@ -1,12 +1,15 @@
+import json
+import uuid
+from typing import Union, List
+
+from redis import Redis
 from fastapi import Body, HTTPException, Security
 from fastapi import APIRouter, Depends
+
 import schemas
-import uuid
-from redis import Redis
 from deps import get_redis
-from typing import Union, List
-import json
-from subscriptions import encode_experience_key, get_api_key
+from subscriptions import encode_experience_key
+from security import get_api_key
 
 router = APIRouter()
 

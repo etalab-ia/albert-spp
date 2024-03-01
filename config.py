@@ -13,7 +13,7 @@ CONTACT = {
     "url": "https://www.etalab.gouv.fr/",
     "email": "etalab@modernisation.gouv.fr",
 }
-API_KEYS_FILE = os.environ("API_KEYS_FILE", "api_keys.example.json")
+API_KEYS_FILE = os.environ.get("API_KEYS_FILE", "api_keys.example.json")
 
 # Env
 ENV = os.environ.get("ENV", "dev")

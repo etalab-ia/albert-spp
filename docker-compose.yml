@@ -15,9 +15,9 @@ services:
       - ENV=${ENV:-dev}
       - APP_VERSION=${APP_VERSION:-0.0.0}
       - "LLM_TABLE=${LLM_TABLE}"
-      - API_KEY_FILE=/code/api_keys.json
+      - API_KEYS_FILE=/code/api_keys.json
     volumes:
-      - ${API_KEY_FILE}:/code/api_keys.json
+      - ${API_KEYS_FILE}:/code/api_keys.json
     depends_on:
       redis:
         condition: service_healthy

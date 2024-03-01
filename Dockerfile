@@ -2,8 +2,8 @@ FROM python:3.10-slim
 
 ENV PYTHONPATH="$PYTHONPATH:/code/api"
 
-RUN addgroup -S albert -g 1100 && \
-    adduser -S albert  -u 1001 -G  --h /code
+RUN addgroup --gid 1100 albert && \
+    adduser --uid 1001 --gid 1100 --home /code albert
 
 WORKDIR /code
 ADD . api

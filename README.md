@@ -26,7 +26,7 @@
 
     Si la variable d'environnement `DEV` n'est pas passée, elle prend la valeur "dev" par défaut. Vous pouvez passer en header (clef: Autorization) de vos requêtes n'importe quel token.
 
-    La variable `LLM_TABLE` doit être une string qui prend la forme d'une liste de tuple python comme ceçi : `'[("model_name"), ("model_url")]'`. Il est possible de fournir la liste de plusieurs modèles déployés à l'API.
+    Si la variable d'environnment `LLM_TABLE` n'est pas passée, elle prend la valeur `'[("AgentPublic/fabrique-reference-2", "http://127.0.0.1:8081")]'`. Ce qui suppose qu'un LLM est déployé en local sur le port 8081. La variable `LLM_TABLE` doit être une string qui prend la forme d'une liste de tuple python comme ceci : `'[("model_name"), ("model_url")]'`. Il est possible de fournir la liste de plusieurs modèles déployés à l'API.
 
     > **⚠️ Attention à des fins de développement cette API ne supporte qu'une entrée de modèle et un seul modèle : [AgentPublic/fabrique-reference-2](https://huggingface.co/AgentPublic/fabrique-reference-2)**
 
@@ -40,7 +40,7 @@ export CI_API_IMAGE_TAG=1.0.0
 docker build --rm --tag ${CI_REGISTRY_IMAGE}/api:${CI_API_IMAGE_TAG} --file ./Dockerfile .
 ```
 
-### Run
+#### Run
 
 ```bash
 bash deploy.sh -r llm_routing_table.example.json -f .env.example
