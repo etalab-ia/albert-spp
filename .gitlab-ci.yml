@@ -77,8 +77,8 @@ deploy:
       scp -i $CI_DEPLOY_USER_SSH_PRIVATE_KEY -o StrictHostKeyChecking=no -r ./${CI_JOB_ID} ${CI_DEPLOY_USER}@${CI_DEPLOY_HOST}:/home/${CI_DEPLOY_USER}/${CI_JOB_ID}
     - | # deploy vllm containers to remote server
       ssh -i $CI_DEPLOY_USER_SSH_PRIVATE_KEY -o StrictHostKeyChecking=no ${CI_DEPLOY_USER}@${CI_DEPLOY_HOST} "
-      mkdir -p /home/${CI_DEPLOY_USER}/api_keys
-      chmod 700 /home/${CI_DEPLOY_USER}/api_keys
+      mkdir -p /home/${CI_DEPLOY_USER}/keys
+      chmod 700 /home/${CI_DEPLOY_USER}/keys
       mv /home/${CI_DEPLOY_USER}/${CI_JOB_ID}/spp_api_keys.json /home/${CI_DEPLOY_USER}/keys/spp_api_keys.json
       docker login --username gitlab-ci-token --password $CI_JOB_TOKEN $CI_REGISTRY
       docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
