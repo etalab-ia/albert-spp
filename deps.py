@@ -1,5 +1,3 @@
-import os
-from fastapi import Depends
 from redis import Redis
 from config import REDIS_HOST, REDIS_PORT, REDIS_PASSWORD
 

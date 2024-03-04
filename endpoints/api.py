@@ -2,9 +2,9 @@ import json
 import uuid
 from typing import Union, List
 
-from redis import Redis
 from fastapi import Body, HTTPException, Security
 from fastapi import APIRouter, Depends
+from redis import Redis
 
 import schemas
 from deps import get_redis

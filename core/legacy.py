@@ -1,15 +1,10 @@
 import json
+import re
 from datetime import datetime, timedelta
-from typing import Iterable
+from typing import Any, Iterable
 
 import requests
-from requests.exceptions import ConnectionError
-
-import os
-import re
-from typing import Any
-
-from jinja2 import BaseLoader, Environment, FileSystemLoader, meta
+from jinja2 import BaseLoader, Environment, meta
 from requests.exceptions import RequestException
 
 from config import LLM_TABLE
