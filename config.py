@@ -7,7 +7,7 @@ APP_DESCRIPTION = """Albert for Services Publics Plus.
 
 Les requêtes aux différents endpoints doivent contenir un header au format `Authorization: Bearer <token>` avec une clé API valide. Pour obtenir une clé API, veuillez contacter l'équipe Etalab.
 """
-APP_VERSION = os.environ.get("APP_VERSION", "0.1.0")
+APP_VERSION = os.environ.get("APP_VERSION", "0.0.0")
 CONTACT = {
     "name": "Etalab - Datalab",
     "url": "https://www.etalab.gouv.fr/",
