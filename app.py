@@ -18,7 +18,7 @@ from subscriptions import Listener
 
 
 # Init Redis
-r = Redis(host=REDIS_HOST, port=REDIS_PORT, password=REDIS_PASSWORD, db=0)
+r = Redis(host=REDIS_HOST, port=int(REDIS_PORT), password=REDIS_PASSWORD, db=0)
 listener = Listener(r, ["spp-exp-channel"])
 listener.start()
 
