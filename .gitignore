@@ -80,3 +80,4 @@ poetry.lock
 MANIFEST
 .pdm-python
 pdm.lock
+*.lock
