@@ -24,6 +24,7 @@ services:
   redis:
     image: redis:7.2.4
     container_name: ${COMPOSE_PROJECT_NAME}-${API_PORT}-redis
+    restart: always
     command: redis-server --save 20 1 --loglevel warning --requirepass ${REDIS_PASSWORD}
     healthcheck:
         test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
