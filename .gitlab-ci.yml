@@ -10,14 +10,12 @@ before_script:
   - | # export env file and copy routing table to pyalbert config
     if [[ $CI_COMMIT_BRANCH = "staging" ]]; then
       echo "info: export staging env file environment"
-      export $(grep -v "^#" $STAGING__ENV_FILE | xargs)
-      echo "info: copy staging routing table to pyalbert config"
-      cp ${STAGING__LLM_ROUTING_TABLE} ./llm_routing_table.json
+      while IFS='=' read -r key value; do export "$key"="$value"; done < <(grep -v "^#" $STAGING__ENV_FILE)
+      cp ${STAGING__ENV_FILE} .env
     elif [[ $CI_COMMIT_BRANCH = "main" ]]; then
       echo "info: export production env file environment"
-      export $(grep -v "^#" $PROD__ENV_FILE | xargs)
-      echo "info: copy production routing table to pyalbert config"
-      cp ${PROD__LLM_ROUTING_TABLE} ./llm_routing_table.json
+      while IFS='=' read -r key value; do export "$key"="$value"; done < <(grep -v "^#" $PROD__ENV_FILE)
+      cp ${PROD__ENV_FILE} .env
     fi
 
 ############################################
@@ -61,30 +59,30 @@ deploy:
       apk add openssh-client
     - | # send deployment files to remote server
       mkdir -p ./${CI_JOB_ID}
-      cp ./deploy.sh ./${CI_JOB_ID}/deploy.sh
       cp ./docker-compose.yml ./${CI_JOB_ID}/docker-compose.yml
-      cp ./llm_routing_table.json ./${CI_JOB_ID}/llm_routing_table.json
       cp $API_KEYS ./${CI_JOB_ID}/spp_api_keys.json
+      cp .env ./${CI_JOB_ID}/.env
       echo "
       CI_REGISTRY_IMAGE=${CI_REGISTRY_IMAGE}
       CI_API_IMAGE_TAG=${CI_API_IMAGE_TAG}
+      CI_VLLM_IMAGE_TAG=${CI_VLLM_IMAGE_TAG}
       APP_VERSION=${CI_API_IMAGE_TAG}
       API_KEYS_FILE=/home/${CI_DEPLOY_USER}/keys/spp_api_keys.json
-      REDIS_PASSWORD=${REDIS_PASSWORD}
       COMPOSE_FILE=/home/${CI_DEPLOY_USER}/${CI_JOB_ID}/docker-compose.yml
       COMPOSE_PROJECT_NAME=spp
-      " > ./${CI_JOB_ID}/.env
+      " >> ./${CI_JOB_ID}/.env
       scp -i $CI_DEPLOY_USER_SSH_PRIVATE_KEY -o StrictHostKeyChecking=no -r ./${CI_JOB_ID} ${CI_DEPLOY_USER}@${CI_DEPLOY_HOST}:/home/${CI_DEPLOY_USER}/${CI_JOB_ID}
-    - | # deploy vllm containers to remote server
+    - | # deploy api container to remote server
       ssh -i $CI_DEPLOY_USER_SSH_PRIVATE_KEY -o StrictHostKeyChecking=no ${CI_DEPLOY_USER}@${CI_DEPLOY_HOST} "
       mkdir -p /home/${CI_DEPLOY_USER}/keys
       chmod 700 /home/${CI_DEPLOY_USER}/keys
       mv /home/${CI_DEPLOY_USER}/${CI_JOB_ID}/spp_api_keys.json /home/${CI_DEPLOY_USER}/keys/spp_api_keys.json
-      docker login --username gitlab-ci-token --password $CI_JOB_TOKEN $CI_REGISTRY
-      docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+      docker login $CI_REGISTRY --username gitlab-ci-token --password-stdin <<<$CI_JOB_TOKEN
       cd /home/${CI_DEPLOY_USER}/${CI_JOB_ID}
-      export CI_REGISTRY_IMAGE=${CI_REGISTRY_IMAGE}
-      export CI_API_IMAGE_TAG=${CI_API_IMAGE_TAG}
-      bash ./deploy.sh -r ./llm_routing_table.json -f .env
+      docker compose --env-file .env down
+      docker tag ${CI_REGISTRY_IMAGE}/api:${CI_API_IMAGE_TAG} ${CI_REGISTRY_IMAGE}/api:${CI_API_IMAGE_TAG}-old || true
+      docker rm ${CI_REGISTRY_IMAGE}/api:${CI_API_IMAGE_TAG}
+      docker compose --env-file .env up --detach
+      docker image rm ${CI_REGISTRY_IMAGE}/api:${CI_API_IMAGE_TAG}-old || true
       rm -rf ~/${CI_JOB_ID}
       "
