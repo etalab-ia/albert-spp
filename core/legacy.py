@@ -34,6 +34,7 @@ API_ROUTE_VER = ""
 #
 ################################################################################
 
+
 class ApiClient:
     def __init__(self, url, username, password):
         self.url = url.rstrip("/")
@@ -117,9 +118,7 @@ class ApiVllmClient:
         self.url = url
 
     # TODO: turn into async
-    def generate(
-        self, prompt, max_tokens=512, temperature=20, top_p=1, streaming=False
-    ) :
+    def generate(self, prompt, max_tokens=512, temperature=20, top_p=1, streaming=False):
         url = f"{self.url}/generate"
         data = {
             "prompt": prompt,
@@ -174,10 +173,10 @@ def get_llm_client(model_name: str) -> ApiVllmClient:
     model_url = model[1]
     return ApiVllmClient(model_url)
 
+
 #
 # Prompt
 #
-
 
 
 def prompt_templates_from_llm_table(table: list[tuple]):
@@ -227,6 +226,7 @@ def prompt_templates_from_llm_table(table: list[tuple]):
             }
 
         templates[model_name] = prompt_template
+
     return templates
 
 
@@ -244,7 +244,7 @@ class Prompter:
         "max_tokens": 4096,
     }
 
-    def __init__(self, url: str, template = None):
+    def __init__(self, url: str, template=None):
         # The prompt template
         self.template = template
         # Eventually stores the sources returned by the last RAG prompt built
@@ -446,9 +446,7 @@ class Prompter:
 
 # see https://github.com/facebookresearch/llama/blob/main/llama/generation.py#L284
 # see also to implement this part in the driver management module of the llm API: https://gitlab.com/etalab-datalab/llm/albert-backend/-/issues/119
-def format_llama2chat_prompt(
-    query: str, system_prompt = None, history= None
-) -> dict:
+def format_llama2chat_prompt(query: str, system_prompt=None, history=None) -> dict:
     messages = history or []
     if history:
         if history[-1]["role"] == "user":
@@ -489,9 +487,7 @@ def format_llama2chat_prompt(
     return {"text": prompt}
 
 
-def format_chatml_prompt(
-    query: str, system_prompt = None, history=None
-) -> dict:
+def format_chatml_prompt(query: str, system_prompt=None, history=None) -> dict:
     messages = history or []
     if history:
         if history[-1]["role"] == "user":
@@ -530,7 +526,7 @@ def format_chatml_prompt(
     return {"text": prompt}
 
 
-def get_prompter(model_name: str, mode = None):
+def get_prompter(model_name: str, mode=None):
     model = next((m for m in LLM_TABLE if m[0] == model_name), None)
     if not model:
         raise ValueError("Prompt model unknown: %s" % model_name)

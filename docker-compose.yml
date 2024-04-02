@@ -1,33 +1,60 @@
 version: "3.8"
 
 services:
+  redis:
+    image: redis:7.2.4
+    restart: always
+    command: redis-server --save 20 1 --loglevel debug --requirepass $REDIS_PASSWORD
+    healthcheck:
+        test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
+        interval: 4s
+        timeout: 10s
+        retries: 5
+    ports:
+      - 6379:6379
+    volumes:
+      - redis:/data
+  vllm:
+    image: registry.gitlab.com/etalab-datalab/llm/albert-backend/vllm:${CI_VLLM_IMAGE_TAG}
+    restart: always
+    expose:
+      - 8000
+    command: python3 app.py --model /models/${VLLM_HF_REPO_ID} --tensor-parallel-size $VLLM_TENSOR_PARALLEL_SIZE --gpu-memory-utilization $VLLM_GPU_MEMORY_UTILIZATION --host 0.0.0.0 --port 8000
+    volumes:
+      - ${MODELS_CACHE_DIR}:/models
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    # healthcheck:
+    #     test: [ "CMD", "curl", "-f", "http://localhost:8000/health" ]
+    #     interval: 120s
+    #     timeout: 10s
+    #     retries: 5
   api:
     image: ${CI_REGISTRY_IMAGE}/api:${CI_API_IMAGE_TAG}
-    container_name: ${COMPOSE_PROJECT_NAME}-${API_PORT}-api
     ports:
       - ${API_PORT}:8000
     restart: always
-    command: uvicorn api.app:app --proxy-headers --root-path /api/spp --forwarded-allow-ips='*' --host 0.0.0.0 --port 8000
+    command: uvicorn api.app:app --proxy-headers --root-path ${API_ROOT_PATH} --forwarded-allow-ips='*' --host 0.0.0.0 --port 8000 --log-level debug
     environment:
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - REDIS_PASSWORD=${REDIS_PASSWORD}
       - ENV=${ENV:-dev}
       - APP_VERSION=${APP_VERSION:-0.0.0}
-      - "LLM_TABLE=${LLM_TABLE}"
+      - "LLM_TABLE=[('${VLLM_HF_REPO_ID}', 'http://vllm:8000')]"
       - API_KEYS_FILE=/code/api_keys.json
     volumes:
       - ${API_KEYS_FILE}:/code/api_keys.json
     depends_on:
       redis:
         condition: service_healthy
+      # vllm:
+      #   condition: service_healthy
+
+volumes:
   redis:
-    image: redis:7.2.4
-    container_name: ${COMPOSE_PROJECT_NAME}-${API_PORT}-redis
-    restart: always
-    command: redis-server --save 20 1 --loglevel warning --requirepass ${REDIS_PASSWORD}
-    healthcheck:
-        test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
-        interval: 4s
-        timeout: 10s
-        retries: 5
