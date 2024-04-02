@@ -3,15 +3,13 @@ version: "3.8"
 services:
   redis:
     image: redis:7.2.4
-    #restart: always
+    restart: always
     command: redis-server --save 20 1 --loglevel debug --requirepass $REDIS_PASSWORD
     healthcheck:
         test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
         interval: 4s
         timeout: 10s
         retries: 5
-    ports:
-      - 6379:6379
     volumes:
       - redis:/data
   vllm:

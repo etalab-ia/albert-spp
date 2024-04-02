@@ -31,6 +31,7 @@ def anonymize(
         data = data.dict()
 
         data["time"] = dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%d %H:%M:%S.%f%z")
+        print(f"anonymize -{data['id']}: {data['time']}") #TODO: replace with logger later
         redis.publish("spp-exp-channel", json.dumps(data))
 
     if len(form_data) == 1:
