@@ -22,8 +22,6 @@ def get_api_key(api_key_header: str = Security(api_key_header)) -> str:
         )
     
     api_key_header = api_key_header.replace("Bearer ", "")
-
-    api_key_header = api_key_header.replace("Bearer ", "")
     
     # open api_keys json file
     with open(API_KEYS_FILE, "r") as file:

@@ -54,7 +54,7 @@ services:
       redis:
         condition: service_healthy
       # vllm:
-      #   condition: service_healthy
+      #   condition: service_healthy # waiting model then redis pubsub listener crash
 
 volumes:
   redis:

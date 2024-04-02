@@ -1,5 +1,6 @@
 import json
 import uuid
+import datetime as dt
 from typing import Union, List
 
 from fastapi import Body, HTTPException, Security
@@ -8,7 +9,6 @@ from redis import Redis
 
 import schemas
 from deps import get_redis
-from subscriptions import encode_experience_key
 from security import get_api_key
 
 router = APIRouter()
@@ -29,6 +29,8 @@ def anonymize(
             data.id = str(uuid.uuid4())
 
         data = data.dict()
+
+        data["time"] = dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%d %H:%M:%S.%f%z")
         redis.publish("spp-exp-channel", json.dumps(data))
 
     if len(form_data) == 1:
@@ -52,7 +54,7 @@ def ditp_get_data(
     answers = []
     for data in form_data:
         data = data.dict()
-        anwser = redis.get(encode_experience_key(data))
+        anwser = redis.get(data["id"])
         answers.append(anwser)
 
     if len(form_data) == 1:
