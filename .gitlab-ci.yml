@@ -81,7 +81,7 @@ deploy:
       cd /home/${CI_DEPLOY_USER}/${CI_JOB_ID}
       docker compose --env-file .env down
       docker tag ${CI_REGISTRY_IMAGE}/api:${CI_API_IMAGE_TAG} ${CI_REGISTRY_IMAGE}/api:${CI_API_IMAGE_TAG}-old || true
-      docker rm ${CI_REGISTRY_IMAGE}/api:${CI_API_IMAGE_TAG}
+      docker image rm ${CI_REGISTRY_IMAGE}/api:${CI_API_IMAGE_TAG} || true
       docker compose --env-file .env up --detach
       docker image rm ${CI_REGISTRY_IMAGE}/api:${CI_API_IMAGE_TAG}-old || true
       rm -rf ~/${CI_JOB_ID}
