@@ -60,23 +60,23 @@ deploy:
     - | # send deployment files to remote server
       mkdir -p ./${CI_JOB_ID}
       cp ./docker-compose.yml ./${CI_JOB_ID}/docker-compose.yml
-      cp $API_KEYS ./${CI_JOB_ID}/spp_api_keys.json
+      cp $API_KEYS ./${CI_JOB_ID}/api_keys.json
       cp .env ./${CI_JOB_ID}/.env
       echo "
       CI_REGISTRY_IMAGE=${CI_REGISTRY_IMAGE}
       CI_API_IMAGE_TAG=${CI_API_IMAGE_TAG}
       CI_VLLM_IMAGE_TAG=${CI_VLLM_IMAGE_TAG}
       APP_VERSION=${CI_API_IMAGE_TAG}
-      API_KEYS_FILE=/home/${CI_DEPLOY_USER}/keys/spp_api_keys.json
+      API_KEYS_FILE=/data/spp/keys/api_keys.json
       COMPOSE_FILE=/home/${CI_DEPLOY_USER}/${CI_JOB_ID}/docker-compose.yml
       COMPOSE_PROJECT_NAME=spp
       " >> ./${CI_JOB_ID}/.env
       scp -i $CI_DEPLOY_USER_SSH_PRIVATE_KEY -o StrictHostKeyChecking=no -r ./${CI_JOB_ID} ${CI_DEPLOY_USER}@${CI_DEPLOY_HOST}:/home/${CI_DEPLOY_USER}/${CI_JOB_ID}
     - | # deploy api container to remote server
       ssh -i $CI_DEPLOY_USER_SSH_PRIVATE_KEY -o StrictHostKeyChecking=no ${CI_DEPLOY_USER}@${CI_DEPLOY_HOST} "
-      mkdir -p /home/${CI_DEPLOY_USER}/keys
-      chmod 700 /home/${CI_DEPLOY_USER}/keys
-      mv /home/${CI_DEPLOY_USER}/${CI_JOB_ID}/spp_api_keys.json /home/${CI_DEPLOY_USER}/keys/spp_api_keys.json
+      mkdir -p /data/spp/keys
+      mv /home/${CI_DEPLOY_USER}/${CI_JOB_ID}/api_keys.json /data/spp/keys/api_keys.json
+      chmod 700 -R /data/spp/keys
       docker login $CI_REGISTRY --username gitlab-ci-token --password-stdin <<<$CI_JOB_TOKEN
       cd /home/${CI_DEPLOY_USER}/${CI_JOB_ID}
       docker compose --env-file .env down

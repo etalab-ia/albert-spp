@@ -45,9 +45,9 @@ services:
       - ENV=${ENV:-dev}
       - APP_VERSION=${APP_VERSION:-0.0.0}
       - "LLM_TABLE=[('${VLLM_HF_REPO_ID}', 'http://vllm:8000')]"
-      - API_KEYS_FILE=/code/api_keys.json
+      - API_KEYS_FILE=/code/keys/api_keys.json
     volumes:
-      - ${API_KEYS_FILE}:/code/api_keys.json
+      - /data/spp/keys:/code/keys
     depends_on:
       redis:
         condition: service_healthy
