@@ -1,7 +1,7 @@
 FROM python:3.10-slim
 
-RUN addgroup --gid 1100 albert && \
-    adduser --uid 1001 --gid 1100 --home /code albert
+RUN addgroup --gid 1101 albert && \
+    adduser --uid 1100 --gid 1101 --home /code albert
 
 WORKDIR /code
 
