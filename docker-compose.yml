@@ -12,26 +12,7 @@ services:
         retries: 5
     volumes:
       - redis:/data
-  vllm:
-    image: registry.gitlab.com/etalab-datalab/llm/albert-backend/vllm:${CI_VLLM_IMAGE_TAG}
-    restart: always
-    expose:
-      - 8000
-    command: python3 app.py --model /models/${VLLM_HF_REPO_ID} --tensor-parallel-size $VLLM_TENSOR_PARALLEL_SIZE --gpu-memory-utilization $VLLM_GPU_MEMORY_UTILIZATION --host 0.0.0.0 --port 8000
-    volumes:
-      - ${MODELS_CACHE_DIR}:/models
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: all
-              capabilities: [gpu]
-    # healthcheck:
-    #     test: [ "CMD", "curl", "-f", "http://localhost:8000/health" ]
-    #     interval: 120s
-    #     timeout: 10s
-    #     retries: 5
+
   api:
     image: ${CI_REGISTRY_IMAGE}/api:${CI_API_IMAGE_TAG}
     ports:
@@ -44,15 +25,13 @@ services:
       - REDIS_PASSWORD=${REDIS_PASSWORD}
       - ENV=${ENV:-dev}
       - APP_VERSION=${APP_VERSION:-0.0.0}
-      - "LLM_TABLE=[('${VLLM_HF_REPO_ID}', 'http://vllm:8000')]"
+      - "LLM_TABLE=[('AgentPublic/fabrique-reference-2', 'http://localhost:8080')]" # Warning: LLM model must be started before the API server
       - API_KEYS_FILE=/code/keys/api_keys.json
     volumes:
       - /data/spp/keys:/code/keys
     depends_on:
       redis:
         condition: service_healthy
-      # vllm:
-      #   condition: service_healthy # waiting model then redis pubsub listener crash
 
 volumes:
   redis:
