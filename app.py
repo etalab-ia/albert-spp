@@ -37,11 +37,7 @@ app.include_router(api_router)
 # startup init redis
 @app.on_event("startup")
 async def init_redis():
-    # TODO:hotfix for redis connection, update docker-compose to wait vllm service and remove sleep
-    import time
-
-    time.sleep(180)
-
+    
     r = Redis(host=REDIS_HOST, port=int(REDIS_PORT), password=REDIS_PASSWORD, db=0)
     app.state.listener = Listener(r, ["spp-exp-channel"])
     app.state.listener.start()
