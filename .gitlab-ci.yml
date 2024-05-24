@@ -4,8 +4,6 @@ stages:
 build:
   rules:
     - if: $CI_COMMIT_BRANCH == "staging"
-      when: manual
-      allow_failure: true  # to avoid blocked state
   stage: build
   image: docker:latest
   services:

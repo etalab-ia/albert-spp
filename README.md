@@ -34,7 +34,7 @@
 
 ```bash
 docker build --rm --tag albert/spp/api:latest --file ./Dockerfile .
-docker compose --env-file .env.example up --detach
+docker compose --env-file up --detach
 ```
 
 **Remarques**
