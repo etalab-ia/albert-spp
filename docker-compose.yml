@@ -14,21 +14,21 @@ services:
       - redis:/data
 
   api:
-    image: ${CI_REGISTRY_IMAGE}/api:${CI_API_IMAGE_TAG}
+    image: albert/spp/api:latest # Build image with the Dockerfile before running this docker-compose.yml
     ports:
-      - ${API_PORT}:8000
+      - 8000:8000
     restart: always
     command: uvicorn api.app:app --proxy-headers --root-path ${API_ROOT_PATH} --forwarded-allow-ips='*' --host 0.0.0.0 --port 8000 --log-level debug
     environment:
       - REDIS_HOST=redis
       - REDIS_PORT=6379
-      - REDIS_PASSWORD=${REDIS_PASSWORD}
-      - ENV=${ENV:-dev}
-      - APP_VERSION=${APP_VERSION:-0.0.0}
+      - REDIS_PASSWORD=mypassword
+      - ENV=dev
+      - APP_VERSION=1.0.0
       - "LLM_TABLE=[('AgentPublic/fabrique-reference-2', 'http://localhost:8080')]" # Warning: LLM model must be started before the API server
       - API_KEYS_FILE=/code/keys/api_keys.json
     volumes:
-      - /data/spp/keys:/code/keys
+      - ./keys:/code/keys
     depends_on:
       redis:
         condition: service_healthy
