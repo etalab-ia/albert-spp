@@ -32,53 +32,15 @@
 
 ### Docker
 
-#### Build
-
 ```bash
-export CI_REGISTRY_IMAGE=myregistry
-export CI_API_IMAGE_TAG=1.0.0
-docker build --rm --tag ${CI_REGISTRY_IMAGE}/api:${CI_API_IMAGE_TAG} --file ./Dockerfile .
-```
-
-#### Run
-
-```bash
+docker build --rm --tag albert/spp/api:latest --file ./Dockerfile .
 docker compose --env-file .env.example up --detach
 ```
 
-### CI/CD (docker)
+**Remarques**
 
-Variables d'environnement nécessaires :
+* Le fichier `API_KEYS` doit être sur le modèle du fichier [api_keys.example.json](./api_keys.example.json).
 
-| key | type | value |
-| --- | --- | --- |
-| CI_DEPLOY_USER | variable | compte utilisateur sur les VM de déploiement |
-| CI_DEPLOY_USER_SSH_PRIVATE_KEY | variable | clef SSH privée du compte utilisateur |
-| CI_API_IMAGE_TAG | variable | version de l'image API qui est build (ex: 1.0.0) |
-| CI_VLLM_IMAGE_TAG | variable | |
-| CI_DEPLOY_GROUP_USER | var | |
-| CI_DEPLOY_GROUP_TOKEN | var | |
-| STAGING__ENV_FILE | file | (1) |
-| PROD__ENV_FILE | file | (1) |
-| API_KEYS | file | (2) |
+* Le modèle doit être déployé à l'aide de ce repository [albert-backend](https://gitlab.com/etalab-datalab/llm/albert-backend).
 
-**(1)** Les fichiers `STAGING__ENV_FILE` et `PROD__ENV_FILE` doivent contenir les variables d'environnements suivantes :
-
-| key | value |
-| --- | --- |
-| ENV | *staging* ou *prod* |
-| CI_DEPLOY_HOST | IP ou DNS de la vm de déploiement |
-| REDIS_PASSWORD | mot de passe de base de données Redis |
-| LLM_TABLE | table des modèles auquel l'API (3) |
-| API_PORT | port de l'API |
-| API_ROOT_PATH | |
-| VLLM_HF_REPO_ID | |
-| VLLM_TENSOR_PARALLEL_SIZE | |
-| VLLM_GPU_MEMORY_UTILIZATION | |
-| MODELS_CACHE_DIR | *AgentPublic/fabrique-reference-2* (4) | 
-
-**(2)** Le fichier `API_KEYS` doit être sur le modèle du fichier [api_keys.example.json](./api_keys.example.json).
-
-**(3)** Les modèles doivent être déployer séparer de ce repository. Pour déployer un modèle rendez-vous sur le repository [albert-backend](https://gitlab.com/etalab-datalab/llm/albert-backend).
-
-**(4)** ⚠️ A des fins de développement cette API ne supporte qu'un seul modèle : [AgentPublic/fabrique-reference-2](https://huggingface.co/AgentPublic/fabrique-reference-2)
+* ⚠️ A des fins de développement cette API ne supporte qu'un seul modèle : [AgentPublic/fabrique-reference-2](https://huggingface.co/AgentPublic/fabrique-reference-2)
