@@ -2,6 +2,26 @@
 
 [[_TOC_]]
 
+## Usage
+
+Exemple of an answer generation:
+
+```sh
+curl -XPOST  https://albert.staging.etalab.gouv.fr/api/spp/anonymize  -H "Content-Type: application/json" \
+    -H "Authorization: Bearer $API_KEY" \
+    -d '{"id":"123", "text":"Merci pour service"}'
+```
+
+You can get the answer with another call
+
+```sh
+curl -XPOST  https://albert.staging.etalab.gouv.fr/api/spp/prod/run/ditp-get-data  -H "Content-Type: application/json" \
+    -H "Authorization: Bearer $API_KEY" \
+    -d '{"id":"123"}'
+```
+
+Batche generations is supported.
+
 ## Déploiement
 
 ### Local
