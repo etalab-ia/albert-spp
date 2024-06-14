@@ -12,4 +12,4 @@ def generate(query, model_name=LLM_DEFAULT_MODEL):
     # Generate
     llm_client = LlmClient(model_name)
     answer = llm_client.generate(prompt)
-    return answer
+    return answer.strip()

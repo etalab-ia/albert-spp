@@ -1,10 +1,9 @@
+import datetime as dt
 import json
 import uuid
-import datetime as dt
-from typing import Union, List
+from typing import List, Union
 
-from fastapi import Body, HTTPException, Security
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Body, Depends, HTTPException, Security
 from redis import Redis
 
 import schemas
@@ -31,7 +30,7 @@ def anonymize(
         data = data.dict()
 
         data["time"] = dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%d %H:%M:%S.%f%z")
-        print(f"anonymize -{data['id']}: {data['time']}") #TODO: replace with logger later
+        print(f"anonymize -{data['id']}: {data['time']}")  # TODO: replace with logger later
         redis.publish("spp-exp-channel", json.dumps(data))
 
     if len(form_data) == 1:
