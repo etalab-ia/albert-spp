@@ -1,0 +1,22 @@
+[project]
+name = "albert-spp"
+version = "1.0.3"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+dependencies = [
+    "fastapi==0.103.1",
+    "pydantic==2.3.0",
+    "pydantic_core==2.6.3",
+    "python-dotenv==1.0.1",
+    "uvicorn==0.23.2",
+    "redis==5.0.2",
+    "requests==2.31.0",
+    "jinja2==3.1.4",
+    "pyalbert==0.4.12",
+]
+
+[tool.setuptools]
+py-modules = []
+
+[tool.ruff]
+line-length = 100
