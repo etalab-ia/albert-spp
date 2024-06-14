@@ -1,5 +1,6 @@
 import os
-import ast
+
+from pyalbert.config import LLM_TABLE
 
 # App
 APP_NAME = "albert-spp"
@@ -34,14 +35,8 @@ REDIS_PASSWORD = os.environ.get("REDIS_PASSWORD", None)
 
 # LLM
 # The model is not customizable for this API
-LLM_DEFAULT_MODEL = "AgentPublic/fabrique-reference-2"
+LLM_DEFAULT_MODEL = "AgentPublic/llama3-fabrique-texte"
 
-LLM_TABLE = os.getenv("LLM_TABLE")
-if LLM_TABLE:
-    LLM_TABLE = ast.literal_eval(LLM_TABLE)
-    models = [model for model, url in LLM_TABLE]
-    assert LLM_DEFAULT_MODEL in models, f"{LLM_DEFAULT_MODEL} should be in LLM_TABLE"
-
-# only for local deployment, to use a local LLM server on port 8081
-elif ENV == "dev":
-    LLM_TABLE = [(LLM_DEFAULT_MODEL, "http://127.0.0.1:8081")]
+assert LLM_DEFAULT_MODEL in [
+    m["model"] for m in LLM_TABLE
+], f"{LLM_DEFAULT_MODEL} should be in LLM_TABLE"
