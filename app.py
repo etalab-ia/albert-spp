@@ -1,3 +1,7 @@
+from fastapi import APIRouter, FastAPI
+from redis import Redis
+from starlette.middleware.cors import CORSMiddleware
+
 from config import (
     APP_DESCRIPTION,
     APP_NAME,
@@ -5,16 +9,11 @@ from config import (
     BACKEND_CORS_ORIGINS,
     CONTACT,
     REDIS_HOST,
-    REDIS_PORT,
     REDIS_PASSWORD,
+    REDIS_PORT,
 )
 from endpoints import api, misc
 from subscriptions import Listener
-
-from fastapi import APIRouter, FastAPI
-from starlette.middleware.cors import CORSMiddleware
-from redis import Redis
-
 
 # Init server
 app = FastAPI(title=APP_NAME, description=APP_DESCRIPTION, version=APP_VERSION, contact=CONTACT)
@@ -37,7 +36,6 @@ app.include_router(api_router)
 # startup init redis
 @app.on_event("startup")
 async def init_redis():
-    
     r = Redis(host=REDIS_HOST, port=int(REDIS_PORT), password=REDIS_PASSWORD, db=0)
     app.state.listener = Listener(r, ["spp-exp-channel"])
     app.state.listener.start()
