@@ -51,21 +51,16 @@ async def generate(request: Request) -> Response:
 
 @app.get("/get_prompt_config")
 async def get_prompt_config(request: Request, config_file: str | None = None) -> Response:
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    with open(os.path.join(script_dir, "rag_prompt_template.jinja")) as f:
-        rag_template = f.read()
-
     data = {
-        "prompt_format": "llama-chat",
+        "prompt_format": "llama3-chat",
         "system_prompt": "a general system prompt...",
         "max_tokens": 2048,
         "prompts": [
             {
                 "mode": "simple",
                 "system_prompt": "a particular system prompt...",
-                "template": rag_template,
+                "template": "Question soumise au service: {{query}}",
             },
-            {"mode": "rag", "template": rag_template, "default": {"limit": 4}},
         ],
     }
     return JSONResponse(data)
