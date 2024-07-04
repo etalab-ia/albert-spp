@@ -1,29 +1,9 @@
-import fakeredis
-import pytest
+import time
+
 from fastapi.testclient import TestClient
-from pyalbert import set_llm_table
 
-LLM_TABLE = [{"model": "AgentPublic/llama3-fabrique-texte", "url": "http://127.0.0.1:8899"}]
-set_llm_table(LLM_TABLE)
-
-from app import app
 from config import APP_VERSION
-from deps import get_redis
 from tests.conftest import TestApi, log_and_assert
-
-
-@pytest.fixture
-def fake_redis():
-    return fakeredis.FakeStrictRedis()
-
-
-@pytest.fixture
-def client(fake_redis):
-    def override_get_redis():
-        yield fake_redis
-
-    app.dependency_overrides[get_redis] = override_get_redis
-    return TestClient(app)
 
 
 class TestEndpointsStream(TestApi):
@@ -46,6 +26,7 @@ class TestEndpointsStream(TestApi):
 
         # Read data
         # ...
+        time.sleep(1)
         data = {"id": "user_random_id"}
         response = client.post(
             "/prod/run/ditp-get-data", headers={"Authorization": "Bearer NOOP"}, json=data

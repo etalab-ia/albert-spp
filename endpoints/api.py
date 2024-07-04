@@ -54,8 +54,8 @@ def ditp_get_data(
     answers = []
     for data in form_data:
         data = data.dict()
-        anwser = redis.get(data["id"])
-        answers.append(anwser)
+        answer = redis.get(data["id"])
+        answers.append(answer)
 
     if len(form_data) == 1:
         if answers[0] is None:
