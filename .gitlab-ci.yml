@@ -1,5 +1,30 @@
 stages:
+  - test
   - build
+
+
+cache:
+  paths:
+    - .cache/pip
+    - venv/
+
+
+test:spp-api:
+  stage: test
+  image: python:3.10-slim
+  rules:
+    - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "dev" || $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "staging" || $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main"
+      changes:
+        - "**/*.py"
+      when: always
+  before_script:
+  - |
+    python -m venv venv
+    source venv/bin/activate
+    pip install --cache-dir .cache/pip .[test]
+  script:
+    - pytest -W ignore
+
 
 build:
   rules:
