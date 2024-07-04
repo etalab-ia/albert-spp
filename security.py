@@ -10,7 +10,7 @@ api_key_header = APIKeyHeader(name="Authorization")
 
 def get_api_key(api_key_header: str = Security(api_key_header)) -> str:
     # ignore api key validation in development
-    if ENV == "dev":
+    if ENV in ["dev", "unittest"]:
         return api_key_header
 
     # check if api key is in the correct format

@@ -15,8 +15,23 @@ dependencies = [
     "pyalbert==0.4.12",
 ]
 
+# Tests
+
+[project.optional-dependencies]
+test = ["pytest==8.2.2", "fakeredis==2.23.3"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+
+# Packaging
+
 [tool.setuptools]
 py-modules = []
+
+# Linter
 
 [tool.ruff]
 line-length = 100
