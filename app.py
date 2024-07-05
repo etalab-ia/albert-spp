@@ -8,10 +8,9 @@ from config import (
     APP_VERSION,
     BACKEND_CORS_ORIGINS,
     CONTACT,
-    REDIS_HOST,
-    REDIS_PASSWORD,
-    REDIS_PORT,
+    ENV,
 )
+from deps import get_redis
 from endpoints import api, misc
 from subscriptions import Listener
 
@@ -33,9 +32,18 @@ api_router.include_router(api.router)
 app.include_router(api_router)
 
 
-# startup init redis
-@app.on_event("startup")
-async def init_redis():
-    r = Redis(host=REDIS_HOST, port=int(REDIS_PORT), password=REDIS_PASSWORD, db=0)
+def init_redis(r: Redis):
     app.state.listener = Listener(r, ["spp-exp-channel"])
     app.state.listener.start()
+
+
+@app.on_event("startup")
+async def startup_event():
+    if ENV != "unittest":
+        r = next(get_redis(finally_close=False))
+        init_redis(r)
+
+
+@app.on_event("shutdown")
+async def shutdown_event():
+    app.state.listener.stop()
