@@ -14,7 +14,13 @@ os.environ["ENV"] = "unittest"
 
 from pyalbert import set_llm_table
 
-LLM_TABLE = [{"model": "AgentPublic/llama3-fabrique-texte", "url": "http://127.0.0.1:8899"}]
+LLM_TABLE = [
+    {
+        "model": "AgentPublic/llama3-fabrique-texte",
+        "type": "text-generation",
+        "url": "http://127.0.0.1:8899",
+    }
+]
 set_llm_table(LLM_TABLE)
 
 from app import app, init_redis

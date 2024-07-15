@@ -27,10 +27,10 @@ def anonymize(
             # see https://tchap.gouv.fr/#/room/!ZyhOfCwElHmyNMSlcw:agent.dinum.tchap.gouv.fr/$XMeXbIDhGtXBycZu-9Px2frsczn_iU7xiJ5xvjbs-pQ?via=agent.dinum.tchap.gouv.fr&via=agent.externe.tchap.gouv.fr&via=agent.tchap.gouv.fr
             data.id = str(uuid.uuid4())
 
-        data = data.dict()
+        data = data.model_dump()
 
         data["time"] = dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%d %H:%M:%S.%f%z")
-        print(f"anonymize -{data['id']}: {data['time']}")  # TODO: replace with logger later
+        print(f"anonymize - {data['id']}: {data['time']}")  # TODO: replace with logger later
         redis.publish("spp-exp-channel", json.dumps(data))
 
     if len(form_data) == 1:
@@ -53,7 +53,7 @@ def ditp_get_data(
 
     answers = []
     for data in form_data:
-        data = data.dict()
+        data = data.model_dump()
         answer = redis.get(data["id"])
         answers.append(answer)
 
