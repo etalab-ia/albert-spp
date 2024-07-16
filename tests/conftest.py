@@ -13,14 +13,19 @@ from pytest import fail
 os.environ["ENV"] = "unittest"
 
 from pyalbert import set_llm_table
+from pyalbert.prompt import PROMPTS, PromptConfig
 
+LLM_MODEL = "AgentPublic/llama3-fabrique-texte"
 LLM_TABLE = [
     {
-        "model": "AgentPublic/llama3-fabrique-texte",
+        "model": LLM_MODEL,
         "type": "text-generation",
         "url": "http://127.0.0.1:8899",
     }
 ]
+PROMPTS[LLM_MODEL] = PromptConfig.from_file(
+    "tests/mockups/prompt_config.yml"
+).set_defaults()
 set_llm_table(LLM_TABLE)
 
 from app import app, init_redis
