@@ -26,7 +26,7 @@ class TestEndpointsStream(TestApi):
 
         # Read data
         # ...
-        time.sleep(1)
+        time.sleep(2)
         data = {"id": "user_random_id"}
         response = client.post(
             "/prod/run/ditp-get-data", headers={"Authorization": "Bearer NOOP"}, json=data
