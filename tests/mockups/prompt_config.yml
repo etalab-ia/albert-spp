@@ -1,0 +1,7 @@
+prompt_format: llama3-chat
+max_tokens: 4096
+
+prompts:
+  - mode: simple
+    template: simple_prompt_template.jinja
+
