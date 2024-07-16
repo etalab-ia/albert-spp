@@ -15,19 +15,19 @@ class TestEndpointsStream(TestApi):
 
     def test_crud(self, client: TestClient):
         # Single data
-        data = {"id": "user_random_id", "text": "tell me a joke"}
+        data = {"id": "user_id", "text": "tell me a joke"}
         response = client.post("/anonymize", headers={"Authorization": "Bearer NOOP"}, json=data)
         log_and_assert(response, 200)
 
         # Batched data
-        data = [{"id": "user_random_id", "text": "tell me a joke"}]
+        data = [{"id": "user_id", "text": "tell me a joke"}]
         response = client.post("/anonymize", headers={"Authorization": "Bearer NOOP"}, json=data)
         log_and_assert(response, 200)
 
         # Read data
         # ...
         time.sleep(2)
-        data = {"id": "user_random_id"}
+        data = {"id": "user_id"}
         response = client.post(
             "/prod/run/ditp-get-data", headers={"Authorization": "Bearer NOOP"}, json=data
         )
