@@ -2,14 +2,33 @@ stages:
   - test
   - build
 
+.build_template:
+  stage: build
+  image: docker:latest
+  services:
+    - docker:dind
+  script:
+    - | # build and push image to gitlab registry
+      docker login --username gitlab-ci-token --password $CI_JOB_TOKEN $CI_REGISTRY
+
+      if [[ $CI_COMMIT_BRANCH == "dev" ]]; then
+        docker build --tag ${IMAGE_NAME}:${CI_COMMIT_SHORT_SHA} $BUILD_ARGS $BUILD_CONTEXT
+        docker push ${IMAGE_NAME}:${CI_COMMIT_SHORT_SHA}
+        docker tag ${IMAGE_NAME}:${CI_COMMIT_SHORT_SHA} ${IMAGE_NAME}:latest
+        docker push ${IMAGE_NAME}:latest
+
+      elif [[ $CI_COMMIT_BRANCH == "main" ]]; then
+        docker build --tag ${IMAGE_NAME}:stable $BUILD_ARGS $BUILD_CONTEXT
+        docker push ${IMAGE_NAME}:stable
+
+      fi
 
 cache:
   paths:
     - .cache/pip
     - venv/
 
-
-test:spp-api:
+test:
   stage: test
   image: python:3.10-slim
   rules:
@@ -25,20 +44,12 @@ test:spp-api:
   script:
     - pytest -W ignore
 
-
 build:
   rules:
-    - if: $CI_COMMIT_BRANCH == "staging"
+    - if: $CI_COMMIT_BRANCH == "dev"
   stage: build
-  image: docker:latest
-  services:
-    - docker:dind
-  script:
-    - | # ssh connection setup
-      chmod og= $CI_DEPLOY_USER_SSH_PRIVATE_KEY
-      apk update
-      apk add openssh-client
-    - | # build and push api image to gitlab registry
-      docker login --username gitlab-ci-token --password $CI_JOB_TOKEN $CI_REGISTRY
-      docker build --rm --tag ${CI_REGISTRY_IMAGE}/api:${CI_API_IMAGE_TAG} --file ./Dockerfile .
-      docker push ${CI_REGISTRY_IMAGE}/api:${CI_API_IMAGE_TAG}
+  variables:
+    IMAGE_NAME: "${CI_REGISTRY_IMAGE}/api"
+    BUILD_CONTEXT: "."
+    BUILD_ARGS: "--file ./Dockerfile"
+  extends: .build_template
