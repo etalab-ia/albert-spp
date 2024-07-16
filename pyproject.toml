@@ -4,15 +4,14 @@ version = "1.0.3"
 requires-python = ">=3.10"
 license = { text = "MIT" }
 dependencies = [
-    "fastapi==0.103.1",
-    "pydantic==2.3.0",
-    "pydantic_core==2.6.3",
+    "fastapi==0.111.1",
+    "pydantic==2.8.2",
     "python-dotenv==1.0.1",
-    "uvicorn==0.23.2",
+    "uvicorn==0.30.1",
     "redis==5.0.2",
-    "requests==2.31.0",
+    "requests==2.32.3",
     "jinja2==3.1.4",
-    "pyalbert==0.5.5",
+    "pyalbert==0.6.2",
 ]
 
 # Tests

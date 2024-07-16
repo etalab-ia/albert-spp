@@ -1,11 +1,55 @@
-import json
-import os
-from typing import Generator
+import time
+from typing import Optional
 
-from fastapi import BackgroundTasks, FastAPI, Request
-from fastapi.responses import JSONResponse, Response, StreamingResponse
+from fastapi import FastAPI
+from pydantic import BaseModel, ConfigDict, Field
 
 app = FastAPI()
+
+
+class BaseOpenAIModel(BaseModel):
+    model_config = ConfigDict(extra="allow")
+
+
+class UsageInfo(BaseOpenAIModel):
+    prompt_tokens: int = 0
+    total_tokens: int = 0
+    completion_tokens: Optional[int] = 0
+
+
+# Request schemas
+
+
+class Message(BaseOpenAIModel):
+    role: str
+    content: str
+
+
+class ChatCompletionRequest(BaseOpenAIModel):
+    model: str
+    messages: list[Message]
+    max_tokens: int | None = None
+    temperature: float = 1
+
+
+# Response schemas
+
+
+class ChatCompletionChoice(BaseOpenAIModel):
+    index: int = -1
+    message: Message
+
+
+class ChatCompletionResponse(BaseOpenAIModel):
+    id: str = ""
+    object: str = "chat.completion"
+    created: int = Field(default_factory=lambda: int(time.time()))
+    model: str = "mocked-model"
+    choices: list[ChatCompletionChoice]
+    usage: UsageInfo = UsageInfo()
+
+
+# endpoints
 
 
 @app.get("/healthcheck")
@@ -13,54 +57,12 @@ async def healthcheck():
     return "ok"
 
 
-@app.post("/generate")
-async def generate(request: Request) -> Response:
-    """Return back the prompt. Support stream=True"""
+@app.post("/chat/completions", response_model=ChatCompletionResponse)
+async def chat_completions(request: ChatCompletionRequest):
+    # Create a mock response
+    response_content = "This is a mocked response."
+    mock_response = ChatCompletionResponse(
+        choices=[ChatCompletionChoice(message=Message(role="assistant", content=response_content))]
+    )
 
-    request_dict = await request.json()
-    prompt = request_dict.pop("prompt")
-    stream = request_dict.pop("stream", False)
-    # sampling_params = SamplingParams(**request_dict)
-
-    def chunkify(text):
-        # Split the string in size of different size. Linear grow.
-        start = 0
-        while start < len(text):
-            # Loop through chunk sizes from 1 to 10
-            for chunk_size in range(1, 11):
-                end = start + chunk_size
-                yield text[start:end]
-                start = end
-                if start >= len(text):
-                    break
-
-    def stream_results() -> Generator:
-        full = ""
-        for chars in chunkify(prompt):
-            full += chars  # Yes, it what we receive from vllm. Using the openai compatible server instead ?
-            ret = {"text": [full]}
-            yield (json.dumps(ret) + "\0").encode("utf-8")
-
-    if stream:
-        background_tasks = BackgroundTasks()
-        return StreamingResponse(stream_results(), background=background_tasks)
-
-    ret = {"text": [prompt]}
-    return JSONResponse(ret)
-
-
-@app.get("/get_prompt_config")
-async def get_prompt_config(request: Request, config_file: str | None = None) -> Response:
-    data = {
-        "prompt_format": "llama3-chat",
-        "system_prompt": "a general system prompt...",
-        "max_tokens": 2048,
-        "prompts": [
-            {
-                "mode": "simple",
-                "system_prompt": "a particular system prompt...",
-                "template": "Question soumise au service: {{query}}",
-            },
-        ],
-    }
-    return JSONResponse(data)
+    return mock_response
