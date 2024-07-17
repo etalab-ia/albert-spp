@@ -1,4 +1,5 @@
 import os
+import json
 
 from pyalbert.config import LLM_TABLE
 
@@ -10,11 +11,13 @@ Les requêtes aux différents endpoints doivent contenir un header au format `Au
 """
 APP_VERSION = os.environ.get("APP_VERSION", "0.0.0")
 CONTACT = {
-    "name": "Etalab - Datalab",
+    "name": "Etalab",
     "url": "https://www.etalab.gouv.fr/",
     "email": "etalab@modernisation.gouv.fr",
 }
 API_KEYS_FILE = os.environ.get("API_KEYS_FILE", "api_keys.example.json")
+API_KEYS_FILE = json.load(open(API_KEYS_FILE, "r"))
+API_KEYS = [key for title, key in API_KEYS_FILE.items()]
 
 # Env
 ENV = os.environ.get("ENV", "dev")
