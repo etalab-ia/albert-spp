@@ -36,10 +36,5 @@ REDIS_HOST = os.environ.get("REDIS_HOST", "localhost")
 REDIS_PORT = int(os.environ.get("REDIS_PORT", "6379"))
 REDIS_PASSWORD = os.environ.get("REDIS_PASSWORD", None)
 
-# LLM
-# The model is not customizable for this API
-LLM_DEFAULT_MODEL = "AgentPublic/llama3-fabrique-texte"
-
-assert LLM_DEFAULT_MODEL in [
-    m["model"] for m in LLM_TABLE
-], f"{LLM_DEFAULT_MODEL} should be in LLM_TABLE"
+LLM_DEFAULT_MODEL = os.getenv("LLM_DEFAULT_MODEL", "AgentPublic/llama3-fabrique-texte")
+assert LLM_DEFAULT_MODEL in [m["model"] for m in LLM_TABLE], f"{LLM_DEFAULT_MODEL} should be in LLM_TABLE"  # fmt: off

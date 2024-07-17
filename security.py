@@ -3,9 +3,9 @@ from typing import Annotated
 from fastapi import HTTPException, Depends
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 
-from config import API_KEYS
+from config import API_KEYS, ENV
 
-if API_KEYS:
+if API_KEYS and ENV not in ["dev", "unittest"]:
 
     def check_api_key(api_key: Annotated[HTTPAuthorizationCredentials, Depends(HTTPBearer(scheme_name="API key"))]):
         if api_key.scheme != "Bearer":
