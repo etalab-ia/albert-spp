@@ -10,10 +10,10 @@ import schemas
 from deps import get_redis
 from security import check_api_key
 
-router = APIRouter()
+router = APIRouter(tags=["api"])
 
 
-@router.post("/anonymize", tags=["api"])
+@router.post("/anonymize")
 def anonymize(
     form_data: Union[schemas.ExpIdWithText, List[schemas.ExpIdWithText]] = Body(...),
     redis: Redis = Depends(get_redis),
@@ -42,7 +42,7 @@ def anonymize(
     return {"body": responseOutput}
 
 
-@router.post("/prod/run/ditp-get-data", tags=["api"])
+@router.post("/prod/run/ditp-get-data")
 def ditp_get_data(
     form_data: Union[schemas.ExpId, List[schemas.ExpId]] = Body(...),
     redis: Redis = Depends(get_redis),
