@@ -53,7 +53,5 @@ if BACKEND_CORS_ORIGINS:
         allow_headers=["*"],
     )
 
-api_router = APIRouter()
-api_router.include_router(misc.router)
-api_router.include_router(api.router)
-app.include_router(api_router)
+app.include_router(misc.router)
+app.include_router(api.router)
