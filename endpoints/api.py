@@ -8,16 +8,16 @@ from redis import Redis
 
 import schemas
 from deps import get_redis
-from security import get_api_key
+from security import check_api_key
 
-router = APIRouter()
+router = APIRouter(tags=["api"])
 
 
-@router.post("/anonymize", tags=["api"])
+@router.post("/anonymize")
 def anonymize(
     form_data: Union[schemas.ExpIdWithText, List[schemas.ExpIdWithText]] = Body(...),
     redis: Redis = Depends(get_redis),
-    api_key: str = Security(get_api_key),
+    api_key: str = Security(check_api_key),
 ):
     if not isinstance(form_data, list):
         form_data = [form_data]
@@ -42,11 +42,11 @@ def anonymize(
     return {"body": responseOutput}
 
 
-@router.post("/prod/run/ditp-get-data", tags=["api"])
+@router.post("/prod/run/ditp-get-data")
 def ditp_get_data(
     form_data: Union[schemas.ExpId, List[schemas.ExpId]] = Body(...),
     redis: Redis = Depends(get_redis),
-    api_key: str = Security(get_api_key),
+    api_key: str = Security(check_api_key),
 ):
     if not isinstance(form_data, list):
         form_data = [form_data]
