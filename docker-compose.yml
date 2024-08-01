@@ -28,7 +28,7 @@ services:
       - REDIS_PASSWORD=mypassword
       - ENV=dev
       - APP_VERSION=1.0.0
-      - LLM_DEFAULT_MODEL=AgentPublic/llama3-fabrique-texte
+      - MODEL_NAME=AgentPublic/llama3-fabrique-texte
       - MODELS_URLS=["https://localhost:8001"]
       - API_KEYS_FILE=/code/keys/api_keys.example.json
     volumes:
