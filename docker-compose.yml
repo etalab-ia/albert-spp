@@ -4,7 +4,6 @@ services:
   redis:
     image: redis:7.2.4
     restart: always
-    command: redis-server --save 20 1 --loglevel debug --requirepass mtppassword
     healthcheck:
         test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
         interval: 4s
@@ -23,9 +22,6 @@ services:
     restart: always
     command: uvicorn api.app:app --proxy-headers --forwarded-allow-ips='*' --host 0.0.0.0 --port 8000 --log-level debug
     environment:
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
-      - REDIS_PASSWORD=mypassword
       - ENV=dev
       - APP_VERSION=1.0.0
       - MODEL_NAME=AgentPublic/llama3-fabrique-texte
