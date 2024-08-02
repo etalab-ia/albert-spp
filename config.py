@@ -1,20 +1,7 @@
-import json
 import os
 
-from pyalbert.config import LLM_TABLE
-
-# App
-APP_NAME = "albert-spp"
-APP_DESCRIPTION = """Albert for Services Publics Plus.
-
-Les requêtes aux différents endpoints doivent contenir un header au format `Authorization: Bearer <token>` avec une clé API valide. Pour obtenir une clé API, veuillez contacter l'équipe Etalab.
-"""
+APP_NAME = "Albert SPP"
 APP_VERSION = os.environ.get("APP_VERSION", "0.0.0")
-CONTACT = {
-    "name": "Etalab",
-    "url": "https://www.etalab.gouv.fr/",
-    "email": "etalab@modernisation.gouv.fr",
-}
 API_KEYS = os.environ.get("API_KEYS", "changeme")
 API_KEYS = [key.strip() for key in API_KEYS.split(",")]
 ENV = os.environ.get("ENV", "dev")
@@ -23,5 +10,8 @@ BACKEND_CORS_ORIGINS = ["*"]
 REDIS_HOST = os.environ.get("REDIS_HOST", "redis")
 REDIS_PORT = int(os.environ.get("REDIS_PORT", "6379"))
 REDIS_PASSWORD = os.environ.get("REDIS_PASSWORD", None)
-MODEL_NAME = os.getenv("MODEL_NAME", "AgentPublic/llama3-fabrique-texte")
-ALBERT_API_KEY = os.getenv("ALBERT_API_KEY") # Authentication required to access /v2/indexes
+LANGUAGE_MODEL = os.environ["LANGUAGE_MODEL"]
+EMBEDDINGS_MODEL = os.environ["EMBEDDINGS_MODEL"]
+ALBERT_BASE_URL = os.environ["ALBERT_BASE_URL"]
+ALBERT_API_KEY = os.environ["ALBERT_API_KEY"]
+COLLECTION = os.getenv("COLLECTION", "plus-transformation-gouv-fr")

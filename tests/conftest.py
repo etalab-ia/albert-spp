@@ -1,6 +1,7 @@
 import os
 import subprocess
 import time
+from pathlib import Path
 from typing import Generator
 from urllib.parse import urlparse
 
@@ -9,24 +10,6 @@ import pytest
 import requests
 from fastapi.testclient import TestClient
 from pytest import fail
-
-os.environ["ENV"] = "unittest"
-
-from pyalbert import set_llm_table
-from pyalbert.prompt import PROMPTS, PromptConfig
-
-LLM_MODEL = "AgentPublic/llama3-fabrique-texte"
-LLM_TABLE = [
-    {
-        "model": LLM_MODEL,
-        "type": "text-generation",
-        "url": "http://127.0.0.1:8899",
-    }
-]
-PROMPTS[LLM_MODEL] = PromptConfig.from_file(
-    "tests/mockups/prompt_config.yml"
-).set_defaults()
-set_llm_table(LLM_TABLE)
 
 from app import app, init_redis
 from deps import get_redis
@@ -38,16 +21,14 @@ def log_and_assert(response, code):
         return
 
     if response.status_code != 200:
-        fail(
-            f"Expected status code 200, but got {response.status_code}.\nError details: {response.text}"
-        )
+        fail(f"Expected status code 200, but got {response.status_code}.\nError details: {response.text}")
 
 
-def start_mock_server(command, health_route="/healthcheck", timeout=10, interval=1):
+def start_mock_server(command, health_route="/healthcheck", timeout=10, interval=1, cwd=None):
     """Starts a mock server using subprocess.Popen and waits for it to be ready
     by polling a health check endpoint.
     """
-    process = subprocess.Popen(command)
+    process = subprocess.Popen(command, cwd=cwd)
 
     try:
         end_time = time.time() + timeout
@@ -74,12 +55,29 @@ def start_mock_server(command, health_route="/healthcheck", timeout=10, interval
     return process
 
 
+#
+# API mockups
+#
+
+APP_FOLDER = Path(__file__).parents[1]
+
+
 @pytest.fixture(scope="session")
 def mock_llm() -> Generator:
     if len(LLM_TABLE) > 0:
         LLM_HOST, LLM_PORT = urlparse(LLM_TABLE[0]["url"]).netloc.split(":")
 
-    process = start_mock_server(["uvicorn", "tests.mockups.llm:app", "--port", LLM_PORT])
+    process = start_mock_server(["uvicorn", "tests.mockups.llm:app", "--port", LLM_PORT], cwd=APP_FOLDER)
+    yield
+    process.kill()
+
+
+@pytest.fixture(scope="session")
+def mock_server_es():
+    process = start_mock_server(
+        ["uvicorn", "tests.mockups.elasticsearch:app", "--port", ELASTIC_PORT],
+        cwd=APP_FOLDER,
+    )
     yield
     process.kill()
 
@@ -130,6 +128,6 @@ class TestApi:
     def teardown_method(self):
         pass
 
-    def test_mockup(self, mock_llm, mock_redis):
+    def test_mockup(self, mock_llm, mock_server_es, mock_redis):
         # Start the server
         pass

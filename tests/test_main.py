@@ -28,7 +28,5 @@ class TestEndpointsStream(TestApi):
         # ...
         time.sleep(2)
         data = {"id": "user_id"}
-        response = client.post(
-            "/prod/run/ditp-get-data", headers={"Authorization": "Bearer NOOP"}, json=data
-        )
+        response = client.post("/prod/run/ditp-get-data", headers={"Authorization": "Bearer NOOP"}, json=data)
         log_and_assert(response, 200)
