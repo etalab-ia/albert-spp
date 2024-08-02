@@ -1,5 +1,5 @@
-import os
 import json
+import os
 
 from pyalbert.config import LLM_TABLE
 
@@ -25,3 +25,4 @@ REDIS_HOST = os.environ.get("REDIS_HOST", "redis")
 REDIS_PORT = int(os.environ.get("REDIS_PORT", "6379"))
 REDIS_PASSWORD = os.environ.get("REDIS_PASSWORD", None)
 MODEL_NAME = os.getenv("MODEL_NAME", "AgentPublic/llama3-fabrique-texte")
+ALBERT_API_KEY = os.getenv("ALBERT_API_KEY") # Authentication required to access /v2/indexes
