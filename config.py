@@ -15,9 +15,8 @@ CONTACT = {
     "url": "https://www.etalab.gouv.fr/",
     "email": "etalab@modernisation.gouv.fr",
 }
-API_KEYS_FILE = os.environ.get("API_KEYS_FILE", "api_keys.example.json")
-API_KEYS_FILE = json.load(open(API_KEYS_FILE, "r"))
-API_KEYS = [key for title, key in API_KEYS_FILE.items()]
+API_KEYS = os.environ.get("API_KEYS", "changeme")
+API_KEYS = [key.strip() for key in API_KEYS.split(",")]
 ENV = os.environ.get("ENV", "dev")
 assert ENV in ["unittest", "dev", "staging", "prod"], "wrong ENV value"
 BACKEND_CORS_ORIGINS = ["*"]

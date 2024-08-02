@@ -22,13 +22,11 @@ services:
     restart: always
     command: uvicorn api.app:app --proxy-headers --forwarded-allow-ips='*' --host 0.0.0.0 --port 8000 --log-level debug
     environment:
+      - API_KEYS=changeme
       - ENV=dev
       - APP_VERSION=1.0.0
       - MODEL_NAME=AgentPublic/llama3-fabrique-texte
       - MODELS_URLS=["https://localhost:8001"]
-      - API_KEYS_FILE=/code/keys/api_keys.example.json
-    volumes:
-      - .:/code/keys
     depends_on:
       redis:
         condition: service_healthy
