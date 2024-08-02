@@ -1,0 +1,10 @@
+Mode expérience
+
+Question soumise au service {% if institution %}{{institution}} {% endif %}: {{query}}
+
+{% if context or links %}{{"\n"}}
+Prompt:{% if context %}{{context}}{% endif %}{% if links %}{{links}}{% endif %}
+{% endif %}
+
+###Réponse : 
+
