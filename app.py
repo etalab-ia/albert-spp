@@ -28,7 +28,6 @@ async def lifespan(app: FastAPI):
     if ENV != "unittest":
         r = next(get_redis(finally_close=False))
         init_redis(r)
-
     yield
 
     # Shutdown code
