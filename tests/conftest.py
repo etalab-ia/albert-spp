@@ -14,10 +14,10 @@ from pytest import fail
 os.environ["ENV"] = "unittest"
 
 from pyalbert import set_llm_table
-from pyalbert.config import ELASTIC_PORT
+from pyalbert.config import ELASTIC_PORT, RAG_EMBEDDING_MODEL
 from pyalbert.prompt import PROMPTS, PromptConfig
 
-from config import MODEL_NAME, RAG_EMBEDDING_MODEL
+from config import MODEL_NAME
 
 LLM_TABLE = [
     {
