@@ -1,28 +1,25 @@
 import os
-import json
 import re
 
 os.environ["API_URL"] = "https://franceservices.dev.etalab.gouv.fr"
 os.environ["ELASTIC_HOST"] = "albert.bdd.001.etalab.gouv.fr"
 os.environ["ELASTIC_PORT"] = "39200"
-os.environ["ELASTIC_PASSWORD"] = "Zva5yiiiHfqVPYupDw7HEXVMyMpYUMSd"
+os.environ["ELASTIC_PASSWORD"] = os.getenv("ELASTIC_PASSWORD")
 
-import numpy as np
 import pandas as pd
 from openai import OpenAI
+from pyalbert import set_llm_table
 
 # ============================
 # !pip instal pyalbert==0.7.3
 # ============================
 from pyalbert.clients import LlmClient
-from pyalbert.prompt import Prompter, get_prompter
-from pyalbert import set_llm_table
-
+from pyalbert.prompt import Prompter
 
 # Set model locations
 # --
-albert_api_key = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MjMyMDQzOTksImlhdCI6MTcyMzExNzk5OSwic3ViIjoiNTUifQ.RKEbALq0ulAleoEAK-rUSKPpcQSfKX7MESzIGTmR9NA"
-jeanzay_api_key = "multivac-FQ1cWX4DpshdhkXY2m"
+albert_api_key = os.getenv("ALBERT_API_KEY")
+jeanzay_api_key = os.getenv("JEANZAY_API_KEY")
 
 LLM_TABLE = [
         #{"model": "AgentPublic/fabrique-reference-2", "url": "http://albert.gpu.001.etalab.gouv.fr:8001/v1", "token": albert_api_key, "legacy":True, "prompt_format":"llama2-chat", "template":"spp_fabrique_simple.jinja"},
