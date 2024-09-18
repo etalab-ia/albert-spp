@@ -4,7 +4,7 @@ import threading
 
 from redis import Redis
 
-from llm import generate
+from llm import few_shots
 
 
 class Listener(threading.Thread):
@@ -28,13 +28,14 @@ class Listener(threading.Thread):
             if item["type"] == "message" and item["channel"] == b"spp-exp-channel":
                 data = json.loads(item["data"])
 
-                duration = dt.datetime.now(dt.timezone.utc) - dt.datetime.strptime(
-                    data["time"], "%Y-%m-%d %H:%M:%S.%f%z"
-                )
+                duration = dt.datetime.now(dt.timezone.utc) - dt.datetime.strptime(data["time"], "%Y-%m-%d %H:%M:%S.%f%z")
                 print(f"duration time - {data['id']}: {duration.total_seconds()} s")
 
                 # do not fail silently
-                answer = generate(data["text"])
+                try:
+                    answer = few_shots(prompt=data["text"])
+                except Exception as e:
+                    answer = "error"
 
                 self.redis.set(
                     name=data["id"],  # key

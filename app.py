@@ -1,15 +1,18 @@
 from contextlib import asynccontextmanager
+import requests
 
 from fastapi import APIRouter, FastAPI
 from redis import Redis
 from starlette.middleware.cors import CORSMiddleware
 
 from config import (
-    APP_DESCRIPTION,
+    ALBERT_API_KEY,
+    ALBERT_BASE_URL,
+    LANGUAGE_MODEL,
+    EMBEDDINGS_MODEL,
     APP_NAME,
     APP_VERSION,
     BACKEND_CORS_ORIGINS,
-    CONTACT,
     ENV,
 )
 from deps import get_redis
@@ -28,6 +31,13 @@ async def lifespan(app: FastAPI):
     if ENV != "unittest":
         r = next(get_redis(finally_close=False))
         init_redis(r)
+
+    request = requests.get(f"{ALBERT_BASE_URL}/models", headers={"Authorization": f"Bearer {ALBERT_API_KEY}"})
+    request.raise_for_status()
+    models = [model["id"] for model in request.json()["data"]]
+    assert LANGUAGE_MODEL in models, f"Model {LANGUAGE_MODEL} not found"
+    assert EMBEDDINGS_MODEL in models, f"Model {EMBEDDINGS_MODEL} not found"
+
     yield
 
     # Shutdown code
@@ -37,9 +47,12 @@ async def lifespan(app: FastAPI):
 # Init server
 app = FastAPI(
     title=APP_NAME,
-    description=APP_DESCRIPTION,
     version=APP_VERSION,
-    contact=CONTACT,
+    contact={
+        "name": "Etalab",
+        "url": "https://www.etalab.gouv.fr/",
+        "email": "etalab@modernisation.gouv.fr",
+    },
     lifespan=lifespan,
 )
 

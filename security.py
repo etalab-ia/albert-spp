@@ -16,5 +16,3 @@ else:
 
     def check_api_key():
         pass
-
-

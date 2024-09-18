@@ -85,13 +85,7 @@ async def healthcheck():
 @app.post("/chat/completions", response_model=ChatCompletionResponse)
 async def chat_completions(request: ChatCompletionRequest):
     # Create a mock response
-    mock_response = ChatCompletionResponse(
-        choices=[
-            ChatCompletionChoice(
-                message=Message(role="assistant", content="This is a mocked response.")
-            )
-        ]
-    )
+    mock_response = ChatCompletionResponse(choices=[ChatCompletionChoice(message=Message(role="assistant", content="This is a mocked response."))])
 
     return mock_response
 
@@ -99,8 +93,6 @@ async def chat_completions(request: ChatCompletionRequest):
 @app.post("/embeddings", response_model=EmbeddingResponse)
 async def embeddings(request: EmbeddingRequest):
     # Create a mock response
-    mock_response = EmbeddingResponse(
-        model=request.model, data=[EmbeddingResponseData(embedding=[-0.1, 0.1])]
-    )
+    mock_response = EmbeddingResponse(model=request.model, data=[EmbeddingResponseData(embedding=[-0.1, 0.1])])
 
     return mock_response

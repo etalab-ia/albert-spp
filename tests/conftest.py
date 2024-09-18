@@ -11,29 +11,6 @@ import requests
 from fastapi.testclient import TestClient
 from pytest import fail
 
-os.environ["ENV"] = "unittest"
-
-from pyalbert import set_llm_table
-from pyalbert.config import ELASTIC_PORT, RAG_EMBEDDING_MODEL
-from pyalbert.prompt import PROMPTS, PromptConfig
-
-from config import MODEL_NAME
-
-LLM_TABLE = [
-    {
-        "model": MODEL_NAME,
-        "type": "text-generation",
-        "url": "http://127.0.0.1:8899",
-    },
-    {
-        "model": RAG_EMBEDDING_MODEL,
-        "type": "text-generation",
-        "url": "http://127.0.0.1:8899",
-    },
-]
-PROMPTS[MODEL_NAME] = PromptConfig.from_file("tests/mockups/prompt_config.yml").set_defaults()
-set_llm_table(LLM_TABLE)
-
 from app import app, init_redis
 from deps import get_redis
 
@@ -44,9 +21,7 @@ def log_and_assert(response, code):
         return
 
     if response.status_code != 200:
-        fail(
-            f"Expected status code 200, but got {response.status_code}.\nError details: {response.text}"
-        )
+        fail(f"Expected status code 200, but got {response.status_code}.\nError details: {response.text}")
 
 
 def start_mock_server(command, health_route="/healthcheck", timeout=10, interval=1, cwd=None):
@@ -92,9 +67,7 @@ def mock_llm() -> Generator:
     if len(LLM_TABLE) > 0:
         LLM_HOST, LLM_PORT = urlparse(LLM_TABLE[0]["url"]).netloc.split(":")
 
-    process = start_mock_server(
-        ["uvicorn", "tests.mockups.llm:app", "--port", LLM_PORT], cwd=APP_FOLDER
-    )
+    process = start_mock_server(["uvicorn", "tests.mockups.llm:app", "--port", LLM_PORT], cwd=APP_FOLDER)
     yield
     process.kill()
 

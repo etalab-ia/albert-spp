@@ -11,10 +11,7 @@ dependencies = [
     "redis==5.0.2",
     "requests==2.32.3",
     "jinja2==3.1.4",
-    "pyalbert==0.7.4",
 ]
-
-# Tests
 
 [project.optional-dependencies]
 test = ["pytest==8.2.2", "fakeredis==2.23.3"]
@@ -25,12 +22,19 @@ python_files = ["test_*.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
 
-# Packaging
-
 [tool.setuptools]
 py-modules = []
 
-# Linter
-
 [tool.ruff]
-line-length = 100
+line-length = 150
+
+[tool.ruff.lint]
+ignore = ["F403", "F841"] # import * and never used variables
+
+[tool.ruff.lint.isort]
+force-sort-within-sections = true
+known-first-party = ["config", "utils", "app"]
+forced-separate = ["tests"]
+
+[tool.ruff.lint.isort.sections]
+sections = ["FUTURE", "STDLIB", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLDER"]
