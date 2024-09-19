@@ -1,6 +1,7 @@
 import datetime as dt
 import json
 import threading
+import logging
 
 from redis import Redis
 
@@ -34,8 +35,12 @@ class Listener(threading.Thread):
                 # do not fail silently
                 try:
                     answer = few_shots(prompt=data["text"])
-                except Exception as e:
-                    answer = "error"
+                except Exception:
+                    import traceback
+
+                    error_traceback = traceback.format_exc()
+                    logging.error(f"\nRequest prompt:\n{data['text']}\n\nError:\n{error_traceback}")
+                    answer = f"error on {data['id']} request, please resend prompt later."
 
                 self.redis.set(
                     name=data["id"],  # key
