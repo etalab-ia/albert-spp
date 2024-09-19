@@ -44,12 +44,10 @@ Veuillez apporter une réponse circonstanciée à cette question en respectant s
     assert response.status_code == 200
     response = response.json()
 
-    context = "\n\n\n".join(
-        [
-            f"Question: {result['metadata'].get('question', 'N/A')}\n" f"Réponse: {result['metadata'].get('answer', 'N/A')}"
-            for result in response["data"]
-        ]
-    )
+    context = "\n\n\n".join([
+        f"Question: {result['chunk']['metadata'].get('question', 'N/A')}\n" f"Réponse: {result['chunk']['metadata'].get('answer', 'N/A')}"
+        for result in response["data"]
+    ])
 
     prompt = PROMPT_TEMPLATE.format(context=context, prompt=prompt)
 
