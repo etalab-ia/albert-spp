@@ -1,7 +1,7 @@
 from contextlib import asynccontextmanager
 import requests
 
-from fastapi import APIRouter, FastAPI
+from fastapi import FastAPI
 from redis import Redis
 from starlette.middleware.cors import CORSMiddleware
 
