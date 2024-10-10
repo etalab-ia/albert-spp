@@ -1,7 +1,7 @@
 import time
 from typing import Optional
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Response
 from pydantic import BaseModel, ConfigDict, Field
 
 app = FastAPI()
@@ -77,9 +77,9 @@ class EmbeddingResponse(BaseModel):
 # endpoints
 
 
-@app.get("/healthcheck")
+@app.get("/health")
 async def healthcheck():
-    return "ok"
+    return Response(status_code=200)
 
 
 @app.post("/chat/completions", response_model=ChatCompletionResponse)

@@ -1,6 +1,6 @@
 from redis import Redis
 
-from config import REDIS_HOST, REDIS_PASSWORD, REDIS_PORT
+from app.config import REDIS_HOST, REDIS_PASSWORD, REDIS_PORT
 
 
 def get_redis(finally_close=True) -> Redis:

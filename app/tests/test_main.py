@@ -2,7 +2,7 @@ import time
 
 from fastapi.testclient import TestClient
 
-from config import APP_VERSION
+from app.config import APP_VERSION
 from tests.conftest import TestApi, log_and_assert
 
 

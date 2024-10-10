@@ -12,21 +12,19 @@ services:
     volumes:
       - redis:/data
 
-  api:
-    image: albert-spp/api:latest
-    build:
-      context: .
-      dockerfile: Dockerfile
+  app:
+    image: ghcr.io/etalab-ia/albert-spp/app:latest
     ports:
       - 8000:8000
     restart: always
-    command: uvicorn api.app:app --proxy-headers --forwarded-allow-ips='*' --host 0.0.0.0 --port 8000 --log-level debug
+    command: uvicorn app.main:app --proxy-headers --forwarded-allow-ips='*' --host 0.0.0.0 --port 8000 --log-level debug
     environment:
       - API_KEYS=changeme
       - ENV=dev
       - APP_VERSION=1.0.0
       - ALBERT_BASE_URL=http://localhost:8080/v1
       - ALBERT_API_KEY=changeme
+      - COLLECTION_ID=1
       - LANGUAGE_MODEL=AgentPublic/llama3-fabrique-texte
       - EMBEDDINGS_MODEL=AgentPublic/llama3-fabrique-texte
     depends_on:

@@ -1,6 +1,6 @@
 import requests
 
-from config import ALBERT_BASE_URL, ALBERT_API_KEY, LANGUAGE_MODEL, EMBEDDINGS_MODEL, COLLECTION
+from app.config import ALBERT_API_KEY, ALBERT_BASE_URL, COLLECTION_ID, EMBEDDINGS_MODEL, LANGUAGE_MODEL
 
 
 def few_shots(prompt: str):
@@ -34,7 +34,7 @@ Question de l'usager à traiter :
 Veuillez apporter une réponse circonstanciée à cette question en respectant scrupuleusement les directives énoncées ci-dessus.
 """
     data = {
-        "collections": [COLLECTION],
+        "collections": [COLLECTION_ID],
         "model": EMBEDDINGS_MODEL,
         "k": 4,
         "prompt": prompt,
@@ -44,7 +44,7 @@ Veuillez apporter une réponse circonstanciée à cette question en respectant s
     response = response.json()
 
     context = "\n\n\n".join([
-        f"Question: {result['chunk']['metadata'].get('question', 'N/A')}\n" f"Réponse: {result['chunk']['metadata'].get('answer', 'N/A')}"
+        f"Question: {result["chunk"]["metadata"].get("question", "N/A")}\n" f"Réponse: {result["chunk"]["metadata"].get("answer", "N/A")}"
         for result in response["data"]
     ])
 

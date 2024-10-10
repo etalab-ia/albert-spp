@@ -3,7 +3,7 @@ from typing import Annotated
 from fastapi import HTTPException, Depends
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 
-from config import API_KEYS, ENV
+from app.config import API_KEYS, ENV
 
 if API_KEYS and ENV not in ["dev", "unittest"]:
 

@@ -2,7 +2,7 @@ import subprocess
 import time
 from pathlib import Path
 from typing import Generator
-from urllib.parse import urlparse
+
 
 import fakeredis
 import pytest
@@ -10,8 +10,8 @@ import requests
 from fastapi.testclient import TestClient
 from pytest import fail
 
-from app import app, init_redis
-from deps import get_redis
+from app import init_redis, main
+from app.deps import get_redis
 
 
 def log_and_assert(response, code):
@@ -23,7 +23,7 @@ def log_and_assert(response, code):
         fail(f"Expected status code 200, but got {response.status_code}.\nError details: {response.text}")
 
 
-def start_mock_server(command, health_route="/healthcheck", timeout=10, interval=1, cwd=None):
+def start_mock_server(command, timeout=10, interval=1, cwd=None):
     """Starts a mock server using subprocess.Popen and waits for it to be ready
     by polling a health check endpoint.
     """
@@ -33,9 +33,7 @@ def start_mock_server(command, health_route="/healthcheck", timeout=10, interval
         end_time = time.time() + timeout
         while True:
             try:
-                host = "localhost"
-                port = command[-1]
-                response = requests.get(f"http://{host}:{port}" + health_route)
+                response = requests.get("http://localhost:8000/health")
                 if response.status_code == 200:
                     # Server is ready
                     break
@@ -44,7 +42,7 @@ def start_mock_server(command, health_route="/healthcheck", timeout=10, interval
                 pass
 
             if time.time() > end_time:
-                raise RuntimeError("Timeout waiting for server to start")
+                raise RuntimeError("Timeout waiting for server to start.")
 
             time.sleep(interval)
     except Exception as e:
@@ -55,7 +53,7 @@ def start_mock_server(command, health_route="/healthcheck", timeout=10, interval
 
 
 #
-# API mockups
+# Albert API mockup
 #
 
 APP_FOLDER = Path(__file__).parents[1]
@@ -63,20 +61,7 @@ APP_FOLDER = Path(__file__).parents[1]
 
 @pytest.fixture(scope="session")
 def mock_llm() -> Generator:
-    if len(LLM_TABLE) > 0:
-        LLM_HOST, LLM_PORT = urlparse(LLM_TABLE[0]["url"]).netloc.split(":")
-
-    process = start_mock_server(["uvicorn", "tests.mockups.llm:app", "--port", LLM_PORT], cwd=APP_FOLDER)
-    yield
-    process.kill()
-
-
-@pytest.fixture(scope="session")
-def mock_server_es():
-    process = start_mock_server(
-        ["uvicorn", "tests.mockups.elasticsearch:app", "--port", ELASTIC_PORT],
-        cwd=APP_FOLDER,
-    )
+    process = start_mock_server(["uvicorn", "tests.mockups:app", "--port", 8080], cwd=APP_FOLDER)
     yield
     process.kill()
 
@@ -112,12 +97,12 @@ def client(redis_client) -> Generator:
     def override_get_redis():
         yield redis_client
 
-    app.dependency_overrides[get_redis] = override_get_redis
-    with TestClient(app) as c:
+    main.dependency_overrides[get_redis] = override_get_redis
+    with TestClient(main) as c:
         yield c
 
     # Remove the dependency override after the tests
-    app.dependency_overrides = {}
+    main.dependency_overrides = {}
 
 
 class TestApi:
@@ -127,6 +112,6 @@ class TestApi:
     def teardown_method(self):
         pass
 
-    def test_mockup(self, mock_llm, mock_server_es, mock_redis):
+    def test_mockup(self, mock_llm, mock_redis):
         # Start the server
         pass

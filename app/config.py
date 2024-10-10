@@ -10,8 +10,9 @@ BACKEND_CORS_ORIGINS = ["*"]
 REDIS_HOST = os.environ.get("REDIS_HOST", "redis")
 REDIS_PORT = int(os.environ.get("REDIS_PORT", "6379"))
 REDIS_PASSWORD = os.environ.get("REDIS_PASSWORD", None)
+
 LANGUAGE_MODEL = os.environ["LANGUAGE_MODEL"]
 EMBEDDINGS_MODEL = os.environ["EMBEDDINGS_MODEL"]
 ALBERT_BASE_URL = os.environ["ALBERT_BASE_URL"]
 ALBERT_API_KEY = os.environ["ALBERT_API_KEY"]
-COLLECTION = os.getenv("COLLECTION", "plus-transformation-gouv-fr")
+COLLECTION_ID = os.environ["COLLECTION_ID"]
