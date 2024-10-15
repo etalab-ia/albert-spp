@@ -1,6 +1,7 @@
 from contextlib import asynccontextmanager
 import datetime as dt
 import json
+import logging
 from typing import List, Union
 import uuid
 
@@ -23,6 +24,7 @@ from app.schemas import ExpId, ExpIdWithText
 from app.security import check_api_key
 from app.subscriptions import Listener
 
+logging.basicConfig(level=logging.INFO)
 
 def init_redis(r: Redis):
     app.state.listener = Listener(r, ["spp-exp-channel"])
@@ -46,7 +48,6 @@ async def lifespan(app: FastAPI):
 
     # Shutdown code
     app.state.listener.stop()
-
 
 app = FastAPI(title=APP_NAME, version=APP_VERSION, lifespan=lifespan)
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_credentials=True, allow_methods=["*"], allow_headers=["*"])

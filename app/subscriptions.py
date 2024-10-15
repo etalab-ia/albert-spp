@@ -30,7 +30,7 @@ class Listener(threading.Thread):
                 data = json.loads(item["data"])
 
                 duration = dt.datetime.now(dt.timezone.utc) - dt.datetime.strptime(data["time"], "%Y-%m-%d %H:%M:%S.%f%z")
-                logging.debug(f"duration time - {data["id"]}: {duration.total_seconds()} s")
+                logging.info(f"duration time - {data["id"]}: {duration.total_seconds()} s")
 
                 try:
                     answer = few_shots(prompt=data["text"])
