@@ -39,7 +39,7 @@ Veuillez apporter une réponse circonstanciée à cette question en respectant s
         "k": 4,
         "prompt": prompt,
     }
-    response = requests.post(url=f"{ALBERT_BASE_URL}/search", json=data, headers={"Authorization": f"Bearer {ALBERT_API_KEY}"})
+    response = requests.post(url=f"{ALBERT_BASE_URL}/search", json=data, headers={"Authorization": f"Bearer {ALBERT_API_KEY}"}, timeout=120)
     assert response.status_code == 200
     response = response.json()
 
