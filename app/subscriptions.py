@@ -23,6 +23,7 @@ class Listener(threading.Thread):
     def run(self):
         logging.info("listener run")
         for item in self.pubsub.listen():
+            logging.info(f"listener item: {item}")
             if item["type"] == "message" and item["channel"] == self.KILL_PILL.encode():
                 break
 
@@ -41,6 +42,7 @@ class Listener(threading.Thread):
                     logging.error(f"\nRequest prompt:\n{data["text"]}\n\nError:\n{error_traceback}")
                     answer = f"error on {data["id"]} request, please resend prompt later."
 
+                logging.info(f"send answer to {data['id']}")
                 self.redis.set(
                     name=data["id"],  # key
                     value=answer,  # model output
