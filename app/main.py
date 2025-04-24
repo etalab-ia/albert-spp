@@ -15,7 +15,6 @@ from app.config import (
     ALBERT_BASE_URL,
     APP_NAME,
     APP_VERSION,
-    EMBEDDINGS_MODEL,
     ENV,
     LANGUAGE_MODEL,
 )
@@ -25,6 +24,7 @@ from app.security import check_api_key
 from app.subscriptions import Listener
 
 logging.basicConfig(level=logging.INFO)
+
 
 def init_redis(r: Redis):
     app.state.listener = Listener(r, ["spp-exp-channel"])
@@ -42,12 +42,12 @@ async def lifespan(app: FastAPI):
     request.raise_for_status()
     models = [model["id"] for model in request.json()["data"]]
     assert LANGUAGE_MODEL in models, f"Model {LANGUAGE_MODEL} not found"
-    assert EMBEDDINGS_MODEL in models, f"Model {EMBEDDINGS_MODEL} not found"
 
     yield
 
     # Shutdown code
     app.state.listener.stop()
+
 
 app = FastAPI(title=APP_NAME, version=APP_VERSION, lifespan=lifespan)
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_credentials=True, allow_methods=["*"], allow_headers=["*"])
@@ -75,7 +75,7 @@ def anonymize(
         data = data.model_dump()
 
         data["time"] = dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%d %H:%M:%S.%f%z")
-        print(f"anonymize - {data["id"]}: {data["time"]}")  # TODO: replace with logger later
+        print(f"anonymize - {data['id']}: {data['time']}")  # TODO: replace with logger later
         redis.publish("spp-exp-channel", json.dumps(data))
 
     if len(form_data) == 1:
