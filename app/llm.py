@@ -1,6 +1,6 @@
 import requests
 
-from app.config import ALBERT_API_KEY, ALBERT_BASE_URL, COLLECTION_ID, EMBEDDINGS_MODEL, LANGUAGE_MODEL
+from app.config import ALBERT_API_KEY, ALBERT_BASE_URL, COLLECTION_ID, LANGUAGE_MODEL
 
 
 def few_shots(prompt: str):
@@ -33,18 +33,13 @@ Question de l'usager à traiter :
 
 Veuillez apporter une réponse circonstanciée à cette question en respectant scrupuleusement les directives énoncées ci-dessus.
 """
-    data = {
-        "collections": [COLLECTION_ID],
-        "model": EMBEDDINGS_MODEL,
-        "k": 4,
-        "prompt": prompt,
-    }
+    data = {"collections": [COLLECTION_ID], "k": 4, "prompt": prompt}
     response = requests.post(url=f"{ALBERT_BASE_URL}/search", json=data, headers={"Authorization": f"Bearer {ALBERT_API_KEY}"}, timeout=120)
-    assert response.status_code == 200
+    assert response.status_code == 200, {"code": response.status_code, "text": response.text}
     response = response.json()
 
     context = "\n\n\n".join([
-        f"Question: {result["chunk"]["metadata"].get("question", "N/A")}\n" f"Réponse: {result["chunk"]["metadata"].get("answer", "N/A")}"
+        f"Question: {result['chunk']['metadata'].get('question', 'N/A')}\nRéponse: {result['chunk']['metadata'].get('answer', 'N/A')}"
         for result in response["data"]
     ])
 
@@ -52,6 +47,6 @@ Veuillez apporter une réponse circonstanciée à cette question en respectant s
 
     data = {"model": LANGUAGE_MODEL, "messages": [{"role": "user", "content": prompt}], "stream": False, "n": 1}
     response = requests.post(f"{ALBERT_BASE_URL}/chat/completions", json=data, timeout=30, headers={"Authorization": f"Bearer {ALBERT_API_KEY}"})
-    assert response.status_code == 200, f"error: chat completions ({response.status_code})"
+    assert response.status_code == 200, {"code": response.status_code, "text": response.text}
 
     return response.json()["choices"][0]["message"]["content"]
